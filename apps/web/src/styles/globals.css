@@ -1,0 +1,123 @@
+@import "tailwindcss";
+@plugin "tailwindcss-animate";
+@plugin "@tailwindcss/typography";
+@source "../../node_modules/@repo/ui";
+@import "@repo/tailwind-config/styles/theme.css";
+@import "@repo/tailwind-config/styles/utility.css";
+
+@custom-variant light (&:where([data-theme="light"] *));
+@custom-variant dark (&:where([data-theme="dark"] *));
+
+@layer base {
+  :root[data-theme="light"] {
+    --color-bg: var(--color-white);
+    --color-fg: var(--color-black);
+    --color-border: var(--color-gray-200);
+    --color-subtle: var(--color-gray-100);
+    --color-muted: var(--color-gray-200);
+    --color-emphasized: var(--color-gray-300);
+    --color-inverted: var(--color-gray-800);
+    --color-solid: var(--color-gray-900);
+    --color-focus-ring: var(--color-gray-800);
+    --color-error: var(--color-red-500);
+    --color-warning: var(--color-orange-500);
+    --color-success: var(--color-green-500);
+    --color-info: var(--color-blue-500);
+    --color-shadow: var(--color-gray-900);
+    --colors-shadow-5: --alpha(var(--color-black) / 5%);
+    --colors-shadow-10: --alpha(var(--color-black) / 10%);
+    --colors-shadow-16: --alpha(var(--color-black) / 16%);
+    --colors-shadow-30: --alpha(var(--color-black) / 30%);
+  }
+
+  :root[data-theme="dark"] {
+    --color-bg: var(--color-black);
+    --color-fg: var(--color-gray-50);
+    --color-border: var(--color-gray-800);
+    --color-subtle: var(--color-gray-900);
+    --color-muted: var(--color-gray-800);
+    --color-emphasized: var(--color-gray-700);
+    --color-inverted: var(--color-gray-200);
+    --color-solid: var(--color-white);
+    --color-focus-ring: var(--color-gray-200);
+    --color-error: var(--color-red-400);
+    --color-warning: var(--color-orange-400);
+    --color-success: var(--color-green-400);
+    --color-info: var(--color-blue-400);
+    --colors-shadow-10: --alpha(var(--color-black) / 64%);
+    --colors-shadow-16: --alpha(var(--color-black) / 64%);
+    --colors-shadow-20: inset --alpha(var(--color-gray-300) / 20%);
+    --colors-shadow-30: inset --alpha(var(--color-gray-300) / 30%);
+  }
+
+  :root {
+    --header-height: 64px;
+    --content-height: calc(100dvh - var(--header-height));
+    --font-quicksand: "Quicksand", sans-serif;
+  }
+  
+  @media screen and (min-width: 48rem) {
+    :root {
+      --header-height: 104px;
+    }
+  }
+  
+  html {
+    color: var(--color-fg);
+    background: var(--color-bg);
+    --bg-currentcolor: var(--color-bg);
+    --bg-contrast: oklch(from var(--bg-currentcolor) calc(1 - min(1, max(0, (l - 0.68) * 30))) 0.02 h);
+  }
+  
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    touch-action: manipulation;
+  }
+  
+  body {
+    font-family: var(--font-quicksand);
+  }
+  
+  *,
+  *::before,
+  *::after,
+  *::backdrop {
+    box-sizing: border-box;
+    border-width: 0px;
+    border-style: solid;
+    border-color: var(--color-border, currentColor);
+  }
+  
+  * {
+    margin: 0px;
+    padding: 0px;
+    font: inherit;
+    word-wrap: break-word;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-solid;
+    outline-color: var(--color-focus-ring);
+  }
+}
+
+[role="group"][data-attached] {
+  & > :not(:last-of-type) {
+    @apply -me-px;
+  }
+
+  & > :first-of-type:not(:last-of-type) {
+    @apply rounded-tr-none rounded-br-none border-r-0;
+  }
+
+  & > :not(:first-of-type):not(:last-of-type) {
+    @apply rounded-none border-r-0;
+  }
+
+  & > :not(:first-of-type):last-of-type {
+    @apply rounded-tl-none rounded-bl-none;
+  }
+}
