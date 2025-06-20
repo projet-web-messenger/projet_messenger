@@ -22,7 +22,7 @@ export default function RootLayout({ children }: Readonly<React.PropsWithChildre
       <body className={`${quicksand.variable} antialiased`}>
         <ReactScan />
         <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <Container className="max-w-screen-md duration-moderate">{children}</Container>
+          <Container className="w-screen overflow-hidden duration-moderate">{children}</Container>
         </ThemeProvider>
       </body>
     </html>

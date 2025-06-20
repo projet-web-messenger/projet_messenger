@@ -121,3 +121,22 @@
     @apply rounded-tl-none rounded-bl-none;
   }
 }
+
+
+.scrollbar-blue::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar-blue::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-blue::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #3b82f6, #1e3a8a);
+  border-radius: 4px;
+}
+
+.scrollbar-blue::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #60a5fa, #1d4ed8);
+}
+

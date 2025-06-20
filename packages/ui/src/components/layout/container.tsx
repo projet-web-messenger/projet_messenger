@@ -26,7 +26,7 @@ export const Container: UixComponent<"div", ContainerProps> = (props) => {
 
   return (
     <uix.div
-      className={cn("relative mx-auto w-full px-4", fluid ? "max-w-full" : "max-w-screen-xl", centerContent && "flex flex-col items-center", className)}
+      className={cn("relative w-screen overflow-hidden", fluid ? "max-w-full" : "max-w-screen-xl", centerContent && "flex flex-col items-center", className)}
       {...remainingProps}
     />
   );
