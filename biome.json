@@ -34,7 +34,10 @@
         "useSortedClasses": "warn"
       },
       "suspicious": {
-        "noConsole": "error",
+        "noConsole": {
+          "level": "error",
+          "options": { "allow": ["error"] }
+        },
         "noEvolvingTypes": "error",
         "useErrorMessage": "error",
         "useNumberToFixedDigitsArgument": "warn",

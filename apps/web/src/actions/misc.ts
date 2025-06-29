@@ -1,6 +1,8 @@
 import "server-only";
 
-import { Applications, init } from "@kinde/management-api-js";
+import { Applications, type GetConnectionResponse, init } from "@kinde/management-api-js";
+
+export type Connection = NonNullable<Required<GetConnectionResponse["connection"]>>;
 
 export async function getConnections() {
   init();
@@ -12,5 +14,5 @@ export async function getConnections() {
     return undefined;
   }
 
-  return connections as Array<Required<(typeof connections)[0]["connection"]>>;
+  return connections as Array<Connection>;
 }
