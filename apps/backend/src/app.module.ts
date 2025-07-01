@@ -9,9 +9,11 @@ import { PrismaModule } from "./prisma/prisma.module";
 import { MessageResolver } from "./message/message.resolver";
 import { ConversationResolver } from "./conversation/conversation.resolver";
 import { UserResolver } from "./user/user.resolver";
+import { RabbitmqModule } from "./rabbitmq/rabbitmq.module";
 
 @Module({
   imports: [
+    RabbitmqModule,
     PrismaModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -20,6 +22,7 @@ import { UserResolver } from "./user/user.resolver";
   ],
   controllers: [AppController],
   providers: [
+    RabbitmqModule,
     AppService,
     AppResolver,
     MessageResolver,
