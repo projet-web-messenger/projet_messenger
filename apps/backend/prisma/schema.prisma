@@ -15,14 +15,14 @@ datasource db {
 }
 
 model User {
-  id               Int                @id @default(autoincrement())
-  email            String             @unique
-  name             String
-  messagesSent     Message[]          @relation("MessagesSent")
-  messagesReceived Message[]          @relation("MessagesReceived")
-  conversations    UserConversation[]
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
+  id            Int                @id @default(autoincrement())
+  email         String             @unique
+  name          String
+  messagesSent  Message[]          @relation("MessagesSent")
+  // messagesReceived Message[]          @relation("MessagesReceived")
+  conversations UserConversation[]
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
 }
 
 model Message {
@@ -30,10 +30,10 @@ model Message {
   content        String
   sender         User          @relation("MessagesSent", fields: [senderId], references: [id])
   senderId       Int
-  receiver       User          @relation("MessagesReceived", fields: [receiverId], references: [id])
-  receiverId     Int
+  // receiver       User          @relation("MessagesReceived", fields: [receiverId], references: [id])
+  // receiverId     Int
   conversation   Conversation? @relation(fields: [conversationId], references: [id])
-  conversationId Int?
+  conversationId Int
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 }

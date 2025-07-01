@@ -9,20 +9,32 @@ export class ConversationResolver {
 
   @Mutation(() => Conversation)
   async createConversation(
+    @Args("creatorId") creatorId: number,
     @Args("title", { nullable: true }) title: string,
-    @Args({ name: "userIds", type: () => [Int] }) userIds: number[]
+    @Args({ name: "participantIds", type: () => [Int] })
+    participantIds: number[]
   ): Promise<Conversation> {
+    // Vérifions si le créateur est dans la liste des participants
+    const allParticipants = participantIds.includes(creatorId)
+      ? participantIds
+      : [...participantIds, creatorId];
+
     const createdConversation = await this.prisma.conversation.create({
       data: {
         title,
         participants: {
-          create: userIds.map((userId) => ({
+          create: allParticipants.map((userId) => ({
             user: { connect: { id: userId } },
           })),
         },
       },
       include: {
         participants: { include: { user: true } },
+        messages: {
+          include: { sender: true },
+          orderBy: { createdAt: "desc" },
+          take: 1, // Récupérer le dernier message
+        },
       },
     });
 
@@ -30,6 +42,7 @@ export class ConversationResolver {
       ...createdConversation,
       title: createdConversation.title ?? undefined,
       participants: createdConversation.participants.map((p) => p.user),
+      messages: createdConversation.messages,
     };
   }
 
@@ -43,6 +56,11 @@ export class ConversationResolver {
         conversation: {
           include: {
             participants: { include: { user: true } },
+            messages: {
+              include: { sender: true },
+              orderBy: { createdAt: "desc" },
+              take: 1, // Récupérer le dernier message
+            },
           },
         },
       },
@@ -52,6 +70,7 @@ export class ConversationResolver {
       ...uc.conversation,
       title: uc.conversation.title ?? undefined,
       participants: uc.conversation.participants.map((p) => p.user),
+      messages: uc.conversation.messages,
     }));
   }
 }
