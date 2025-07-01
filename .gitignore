@@ -1,9 +1,33 @@
+# Ignore tous les node_modules, même dans les sous-dossiers
+node_modules/
+**/node_modules/
+
+# pnpm & npm
+pnpm-lock.yaml
+package-lock.json
+
+# build NestJS
+dist/
+**/dist/
+
+# .env (si tu l’utilises)
+.env
+.env.local
+.env.*.local
+
+# IDE et systèmes
+.vscode/
+.DS_Store
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # Dependencies
 node_modules
 .pnp
 .pnp.js
+*.log
+.npm
+.cache
+*.local
 
 # Local env files
 .env
@@ -27,7 +51,6 @@ out/
 build
 dist
 
-
 # Debug
 npm-debug.log*
 yarn-debug.log*
@@ -36,3 +59,4 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+Projet web - M1.pdf
