@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
+import { Resolver, Query, Mutation, Args, Int } from "@nestjs/graphql";
 import { PrismaService } from "../prisma/prisma.service";
 import { Message } from "./models/message.model";
 
@@ -33,6 +33,16 @@ export class MessageResolver {
           { senderId: user2Id, receiverId: user1Id },
         ],
       },
+      orderBy: { createdAt: "asc" },
+    });
+  }
+
+  @Query(() => [Message])
+  async messagesByConversation(
+    @Args("conversationId", { type: () => Int }) conversationId: number
+  ): Promise<Message[]> {
+    return this.prisma.message.findMany({
+      where: { conversationId },
       orderBy: { createdAt: "asc" },
     });
   }

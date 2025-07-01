@@ -33,6 +33,7 @@ type Conversation {
 type Query {
   hello: String!
   getMessagesBetweenUsers(user1Id: Float!, user2Id: Float!): [Message!]!
+  messagesByConversation(conversationId: Int!): [Message!]!
   conversationsByUser(userId: Int!): [Conversation!]!
   allUsers: [User!]!
 }
