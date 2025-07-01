@@ -1,17 +1,19 @@
-import { Module } from "@nestjs/common";
-import { AppController } from "./app.controller";
-import { AppService } from "./app.service";
+import { join } from "node:path";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
-import { join } from "path";
+import { Module } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
+import { AppController } from "./app.controller";
 import { AppResolver } from "./app.resolver";
-import { PrismaModule } from "./prisma/prisma.module";
-import { MessageResolver } from "./message/message.resolver";
+import { AppService } from "./app.service";
 import { ConversationResolver } from "./conversation/conversation.resolver";
+import { MessageResolver } from "./message/message.resolver";
+import { PrismaModule } from "./prisma/prisma.module";
+import { RabbitmqModule } from "./rabbitmq/rabbitmq.module";
 import { UserResolver } from "./user/user.resolver";
 
 @Module({
   imports: [
+    RabbitmqModule,
     PrismaModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -19,12 +21,6 @@ import { UserResolver } from "./user/user.resolver";
     }),
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    AppResolver,
-    MessageResolver,
-    ConversationResolver,
-    UserResolver,
-  ],
+  providers: [AppService, AppResolver, MessageResolver, ConversationResolver, UserResolver],
 })
 export class AppModule {}
