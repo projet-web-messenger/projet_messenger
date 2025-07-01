@@ -20,3 +20,10 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: mydb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # ← Ajoutez cette ligne
+    restart: unless-stopped # ← Optionnel : redémarre automatiquement
+
+volumes:
+  postgres_data: # ← Ajoutez cette section
+    driver: local

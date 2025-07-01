@@ -10,7 +10,6 @@ import { MessageResolver } from "./message/message.resolver";
 import { PrismaModule } from "./prisma/prisma.module";
 import { RabbitmqModule } from "./rabbitmq/rabbitmq.module";
 import { UserResolver } from "./user/user.resolver";
-import { RabbitmqModule } from "./rabbitmq/rabbitmq.module";
 
 @Module({
   imports: [

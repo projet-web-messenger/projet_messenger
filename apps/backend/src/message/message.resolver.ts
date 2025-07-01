@@ -1,10 +1,14 @@
 import { Resolver, Query, Mutation, Args, Int } from "@nestjs/graphql";
 import { PrismaService } from "../prisma/prisma.service";
 import { Message } from "./models/message.model";
+import { RabbitmqService } from "src/rabbitmq/rabbitmq.service";
 
 @Resolver(() => Message)
 export class MessageResolver {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private rabbitmqService: RabbitmqService
+  ) {}
 
   @Mutation(() => Message)
   async sendMessage(
@@ -43,6 +47,13 @@ export class MessageResolver {
         },
       },
     });
+
+    // Publions dans RabbitMQ
+    await this.rabbitmqService.publishMessage({
+      type: "nouveau_message",
+      data: message,
+    });
+
     return {
       ...message,
       conversation: message.conversation

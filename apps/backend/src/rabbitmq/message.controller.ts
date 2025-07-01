@@ -9,5 +9,9 @@ export class MessageController {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   handleMessage(@Payload() payload: any) {
     this.logger.log(`Message reçu via RabbitMQ: ${JSON.stringify(payload)}`);
+
+    if (payload?.data?.content) {
+      this.logger.log(`💬 Contenu du message : "${payload.data.content}"`);
+    }
   }
 }
