@@ -1,13 +1,16 @@
-import { Resolver, Query, Mutation, Args, Int } from "@nestjs/graphql";
+import { Inject } from "@nestjs/common";
+import { Args, Int, Mutation, Query, Resolver, Subscription } from "@nestjs/graphql";
+import { PubSub } from "graphql-subscriptions";
+import { RabbitmqService } from "src/rabbitmq/rabbitmq.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { Message } from "./models/message.model";
-import { RabbitmqService } from "src/rabbitmq/rabbitmq.service";
 
 @Resolver(() => Message)
 export class MessageResolver {
   constructor(
     private prisma: PrismaService,
-    private rabbitmqService: RabbitmqService
+    private rabbitmqService: RabbitmqService,
+    @Inject("PUB_SUB") private pubSub: PubSub, // Injectons PubSub pour les notifications en temps réel
   ) {}
 
   @Mutation(() => Message)
@@ -15,7 +18,7 @@ export class MessageResolver {
     @Args("senderId") senderId: number,
     // @Args("receiverId") receiverId: number,
     @Args("content") content: string,
-    @Args("conversationId") conversationId: number
+    @Args("conversationId") conversationId: number,
   ): Promise<Message> {
     // Vérifions sir le sender fait partie de la conversation
     const userInConversation = await this.prisma.userConversation.findFirst({
@@ -49,9 +52,13 @@ export class MessageResolver {
     });
 
     // Publions dans RabbitMQ
-    await this.rabbitmqService.publishMessage({
-      type: "nouveau_message",
-      data: message,
+    // await this.rabbitmqService.publishMessage({
+    //   type: "nouveau_message",
+    //   data: message,
+    // });
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    await (this.pubSub as any).publish("messageReceived", {
+      messageReceived: message,
     });
 
     return {
@@ -66,13 +73,33 @@ export class MessageResolver {
         : undefined,
     };
   }
+  @Subscription(() => Message, {
+    name: "messageReceived",
+  })
+  messageReceived() {
+    // Utilisons PubSub pour les notifications en temps réel
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    return (this.pubSub as any).asyncIterableIterator("messageReceived");
+  }
+
+  // @Subscription(() => Message, {
+  //   name: "messageReceivedInConversation",
+  //   filter: (payload, variables) => {
+  //     return (
+  //       payload.messageReceivedInConversation.conversationId ===
+  //       variables.conversationId
+  //     );
+  //   },
+  // })
+  // messageReceivedInConversation(
+  //   @Args("conversationId") conversationId: number
+  // ) {
+  //   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  //   return this.pubSub.asyncIterableIterator("messageReceivedInConversation");
+  // }
 
   @Mutation(() => Message)
-  async sendDirectMessage(
-    @Args("senderId") senderId: number,
-    @Args("receiverId") receiverId: number,
-    @Args("content") content: string
-  ): Promise<Message> {
+  async sendDirectMessage(@Args("senderId") senderId: number, @Args("receiverId") receiverId: number, @Args("content") content: string): Promise<Message> {
     //Vérifions si les deux utilisateurs existent
     const sender = await this.prisma.user.findUnique({
       where: { id: senderId },
@@ -150,6 +177,19 @@ export class MessageResolver {
         },
       },
     });
+
+    // //Publions l'événement dans PubSub pour les notifications en temps réel
+    // await this.pubSub.publish("messageReceived", {
+    //   messageReceived: message,
+    // });
+    // await this.pubSub.publish("messageReceivedInConversation", {
+    //   messageReceivedInConversation: message,
+    // });
+
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    await (this.pubSub as any).publish("messageReceived", {
+      messageReceived: message,
+    });
     return {
       ...message,
       conversation: message.conversation
@@ -163,10 +203,7 @@ export class MessageResolver {
   }
 
   @Query(() => [Message])
-  async getMessagesBetweenUsers(
-    @Args("user1Id") user1Id: number,
-    @Args("user2Id") user2Id: number
-  ): Promise<Message[]> {
+  async getMessagesBetweenUsers(@Args("user1Id") user1Id: number, @Args("user2Id") user2Id: number): Promise<Message[]> {
     //Trouvons les messages entre les deux utilisateurs
     const conversation = await this.prisma.conversation.findFirst({
       where: {
@@ -222,9 +259,7 @@ export class MessageResolver {
   }
 
   @Query(() => [Message])
-  async messagesByConversation(
-    @Args("conversationId", { type: () => Int }) conversationId: number
-  ): Promise<Message[]> {
+  async messagesByConversation(@Args("conversationId", { type: () => Int }) conversationId: number): Promise<Message[]> {
     return this.prisma.message.findMany({
       where: { conversationId },
       orderBy: { createdAt: "asc" },

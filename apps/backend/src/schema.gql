@@ -46,3 +46,7 @@ type Mutation {
   createConversation(creatorId: Float!, title: String, participantIds: [Int!]!): Conversation!
   createUser(email: String!, name: String!): User!
 }
+
+type Subscription {
+  messageReceived: Message!
+}
