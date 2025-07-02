@@ -34,7 +34,10 @@
         "useThrowNewError": "warn",
         "useThrowOnlyError": "warn",
         "useWhile": "warn",
-        "useImportType": "warn"
+        "useImportType": {
+          "fix": "none",
+          "level": "warn"
+        }
       },
       "nursery": {
         "useSortedClasses": "warn"

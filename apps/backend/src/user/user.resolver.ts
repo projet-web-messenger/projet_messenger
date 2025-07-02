@@ -2,7 +2,7 @@ import { Args, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/g
 import type { FriendRequestStatus, UserStatus } from "@prisma/client";
 import { FriendRequest } from "./friend-request.model";
 import { User } from "./user.model";
-import type { UserService } from "./user.service";
+import { UserService } from "./user.service";
 
 @Resolver(() => FriendRequest)
 export class FriendRequestResolver {

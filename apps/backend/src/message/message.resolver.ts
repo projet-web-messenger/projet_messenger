@@ -1,10 +1,10 @@
 import { Conversation } from "@/conversation/conversation.model";
-import type { ConversationService } from "@/conversation/conversation.service";
+import { ConversationService } from "@/conversation/conversation.service";
 import { User } from "@/user/user.model";
-import type { UserService } from "@/user/user.service";
+import { UserService } from "@/user/user.service";
 import { Args, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { Message } from "./message.model";
-import type { MessageService } from "./message.service";
+import { MessageService } from "./message.service";
 
 @Resolver(() => Message)
 export class MessageResolver {

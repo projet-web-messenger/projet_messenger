@@ -1,11 +1,11 @@
 import { Message } from "@/message/message.model";
-import type { MessageService } from "@/message/message.service";
+import { MessageService } from "@/message/message.service";
 import { User } from "@/user/user.model";
-import type { UserService } from "@/user/user.service";
+import { UserService } from "@/user/user.service";
 import { Args, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { ConversationType } from "@prisma/client";
 import { Conversation } from "./conversation.model";
-import type { ConversationService } from "./conversation.service";
+import { ConversationService } from "./conversation.service";
 import { UserConversation } from "./user-conversation.model";
 
 @Resolver(() => UserConversation)
