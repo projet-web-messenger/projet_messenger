@@ -1,225 +1,73 @@
-import { Resolver, Query, Mutation, Args, Int } from "@nestjs/graphql";
-import { PrismaService } from "../prisma/prisma.service";
-import { Message } from "./models/message.model";
+import { Args, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
+import { Conversation } from "src/conversation/conversation.model";
+import { ConversationService } from "src/conversation/conversation.service";
+import { User } from "src/user/user.model";
+import { UserService } from "src/user/user.service";
+import { Message } from "./message.model";
+import { MessageService } from "./message.service";
 
 @Resolver(() => Message)
 export class MessageResolver {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private messageService: MessageService,
+    private userService: UserService,
+    private conversationService: ConversationService,
+  ) {}
 
-  @Mutation(() => Message)
-  async sendMessage(
-    @Args("senderId") senderId: number,
-    // @Args("receiverId") receiverId: number,
-    @Args("content") content: string,
-    @Args("conversationId") conversationId: number
-  ): Promise<Message> {
-    // Vérifions sir le sender fait partie de la conversation
-    const userInConversation = await this.prisma.userConversation.findFirst({
-      where: {
-        userId: senderId,
-        conversationId: conversationId,
-      },
-    });
-    if (!userInConversation) {
-      throw new Error("Sender is not part of the conversation");
-    }
-
-    const message = await this.prisma.message.create({
-      data: {
-        content,
-        senderId,
-        conversationId,
-      },
-      include: {
-        sender: true,
-        conversation: {
-          include: {
-            participants: {
-              include: {
-                user: true, // Inclure les détails de l'utilisateur
-              },
-            },
-          },
-        },
-      },
-    });
-    return {
-      ...message,
-      conversation: message.conversation
-        ? {
-            ...message.conversation,
-            title: message.conversation.title ?? undefined,
-            participants: message.conversation.participants.map((p) => p.user),
-            messages: [],
-          }
-        : undefined,
-    };
+  @ResolveField(() => User)
+  async sender(@Parent() message: Message): Promise<User | null> {
+    return this.userService.findById(message.senderId);
   }
 
-  @Mutation(() => Message)
-  async sendDirectMessage(
-    @Args("senderId") senderId: number,
-    @Args("receiverId") receiverId: number,
-    @Args("content") content: string
-  ): Promise<Message> {
-    //Vérifions si les deux utilisateurs existent
-    const sender = await this.prisma.user.findUnique({
-      where: { id: senderId },
-    });
-    const receiver = await this.prisma.user.findUnique({
-      where: { id: receiverId },
-    });
-
-    if (!sender || !receiver) {
-      throw new Error("Le sender ou le receiver n'existe pas");
-    }
-
-    //Vérifions si une conversation existe entre les deux utilisateurs
-    const existingConversation = await this.prisma.conversation.findFirst({
-      where: {
-        participants: {
-          every: {
-            userId: {
-              in: [senderId, receiverId],
-            },
-          },
-        },
-        AND: [
-          {
-            participants: {
-              some: {
-                userId: senderId,
-              },
-            },
-          },
-          {
-            participants: {
-              some: {
-                userId: receiverId,
-              },
-            },
-          },
-        ],
-      },
-    });
-
-    let conversationId: number;
-
-    if (existingConversation) {
-      conversationId = existingConversation.id;
-    } else {
-      //Créons une nouvelle conversation
-      const newConversation = await this.prisma.conversation.create({
-        data: {
-          participants: {
-            create: [{ userId: senderId }, { userId: receiverId }],
-          },
-        },
-      });
-      conversationId = newConversation.id;
-    }
-
-    //Créons le message
-    const message = await this.prisma.message.create({
-      data: {
-        content,
-        senderId,
-        conversationId,
-      },
-      include: {
-        sender: true,
-        conversation: {
-          include: {
-            participants: {
-              include: {
-                user: true, // Inclure les détails de l'utilisateur
-              },
-            },
-          },
-        },
-      },
-    });
-    return {
-      ...message,
-      conversation: message.conversation
-        ? {
-            ...message.conversation,
-            title: message.conversation.title ?? undefined,
-            participants: message.conversation.participants.map((p) => p.user),
-          }
-        : undefined,
-    };
+  @ResolveField(() => Conversation)
+  async conversation(@Parent() message: Message): Promise<Conversation | null> {
+    return this.conversationService.findById(message.conversationId);
   }
 
-  @Query(() => [Message])
-  async getMessagesBetweenUsers(
-    @Args("user1Id") user1Id: number,
-    @Args("user2Id") user2Id: number
-  ): Promise<Message[]> {
-    //Trouvons les messages entre les deux utilisateurs
-    const conversation = await this.prisma.conversation.findFirst({
-      where: {
-        participants: {
-          every: {
-            userId: {
-              in: [user1Id, user2Id],
-            },
-          },
-        },
-        AND: [
-          {
-            participants: {
-              some: {
-                userId: user1Id,
-              },
-            },
-          },
-          {
-            participants: {
-              some: {
-                userId: user2Id,
-              },
-            },
-          },
-        ],
-      },
-    });
-    if (!conversation) {
-      return []; // Si aucune conversation n'existe, retournons un tableau vide
-    }
-
-    // Récupérons les messages de cette conversation
-    const messages = this.prisma.message.findMany({
-      where: {
-        conversationId: conversation.id,
-      },
-      orderBy: { createdAt: "asc" },
-      include: {
-        sender: true, // Inclure les détails de l'expéditeur
-        // conversation: {
-        //   include: {
-        //     participants: {
-        //       include: {
-        //         user: true, // Inclure les détails de l'utilisateur
-        //       },
-      },
-    });
-    return (await messages).map((message) => ({
-      ...message,
-      conversation: undefined,
-    }));
+  @Query(() => Message, { nullable: true })
+  async message(@Args("id") id: string): Promise<Message | null> {
+    return this.messageService.findById(id);
   }
 
   @Query(() => [Message])
   async messagesByConversation(
-    @Args("conversationId", { type: () => Int }) conversationId: number
+    @Args("conversationId") conversationId: string,
+    @Args("limit", { nullable: true }) limit?: number,
+    @Args("offset", { nullable: true }) offset?: number,
   ): Promise<Message[]> {
-    return this.prisma.message.findMany({
-      where: { conversationId },
-      orderBy: { createdAt: "asc" },
-      include: {
-        sender: true,
-      },
+    return this.messageService.findByConversationId(conversationId, limit, offset);
+  }
+
+  @Query(() => [Message])
+  async getMessagesBetweenUsers(@Args("user1Id") user1Id: string, @Args("user2Id") user2Id: string): Promise<Message[]> {
+    return this.messageService.getMessagesBetweenUsers(user1Id, user2Id);
+  }
+
+  @Mutation(() => Message)
+  async sendMessage(@Args("senderId") senderId: string, @Args("conversationId") conversationId: string, @Args("content") content: string): Promise<Message> {
+    return this.messageService.sendMessage({
+      senderId,
+      conversationId,
+      content,
     });
+  }
+
+  @Mutation(() => Message)
+  async sendDirectMessage(@Args("senderId") senderId: string, @Args("receiverId") receiverId: string, @Args("content") content: string): Promise<Message> {
+    return this.messageService.sendDirectMessage({
+      senderId,
+      receiverId,
+      content,
+    });
+  }
+
+  @Mutation(() => Message)
+  async editMessage(@Args("messageId") messageId: string, @Args("userId") userId: string, @Args("content") content: string): Promise<Message> {
+    return this.messageService.editMessage(messageId, userId, content);
+  }
+
+  @Mutation(() => Message)
+  async deleteMessage(@Args("messageId") messageId: string, @Args("userId") userId: string): Promise<Message> {
+    return this.messageService.deleteMessage(messageId, userId);
   }
 }
