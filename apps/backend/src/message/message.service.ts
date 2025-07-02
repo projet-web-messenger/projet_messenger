@@ -1,17 +1,21 @@
 import { PrismaService } from "@/prisma/prisma.service";
+import { MessageSentPayload, RabbitMQService } from "@/rabbitmq/rabbitmq.service";
 import { Injectable } from "@nestjs/common";
 import type { Message } from "@prisma/client";
 
 @Injectable()
 export class MessageService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private rabbitMQService: RabbitMQService,
+  ) {}
 
   async findById(id: string): Promise<Message | null> {
     if (!id || typeof id !== "string") {
       throw new Error("Valid message ID is required");
     }
 
-    const message = this.prisma.message.findUnique({
+    const message = await this.prisma.message.findUnique({
       where: { id },
     });
 
@@ -64,6 +68,11 @@ export class MessageService {
     // Verify conversation exists
     const conversation = await this.prisma.conversation.findUnique({
       where: { id: conversationId },
+      include: {
+        users: {
+          select: { userId: true },
+        },
+      },
     });
 
     if (!conversation) {
@@ -98,6 +107,20 @@ export class MessageService {
       data: { lastMessageAt: new Date() },
     });
 
+    // Publish message to RabbitMQ
+    const recipients = conversation.users.map((u) => u.userId).filter((id) => id !== senderId); // Don't send to sender
+
+    const messagePayload: MessageSentPayload = {
+      messageId: message.id,
+      senderId: message.senderId,
+      conversationId: message.conversationId,
+      content: message.content,
+      timestamp: message.createdAt,
+      messageType: "text",
+      recipients, // Targeted delivery
+    };
+
+    await this.rabbitMQService.publishMessageSent(messagePayload);
     return message;
   }
 

@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -9,15 +8,16 @@ datasource db {
 }
 
 model User {
-  id          String     @id @default(cuid())
-  email       String     @unique
-  username    String     @unique
+  id          String       @id // This will be the Kinde ID
+  email       String?      @unique
+  username    String?      @unique
   displayName String?
   avatar      String?
-  status      UserStatus @default(OFFLINE)
+  status      UserStatus   @default(OFFLINE)
   bio         String?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  provider    AuthProvider @default(EMAIL)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   lastSeenAt  DateTime?
 
   // Relations
@@ -31,6 +31,7 @@ model User {
   @@map("users")
 }
 
+// Rest of your models remain the same...
 model Conversation {
   id            String           @id @default(cuid())
   name          String?
@@ -49,13 +50,13 @@ model Conversation {
 }
 
 model UserConversation {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   userId         String
   conversationId String
-  joinedAt       DateTime @default(now())
+  joinedAt       DateTime  @default(now())
   leftAt         DateTime?
-  isMuted        Boolean  @default(false)
-  isPinned       Boolean  @default(false)
+  isMuted        Boolean   @default(false)
+  isPinned       Boolean   @default(false)
   lastReadAt     DateTime?
 
   // Relations
@@ -67,16 +68,16 @@ model UserConversation {
 }
 
 model Message {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   content        String
   senderId       String
   conversationId String
-  isEdited       Boolean  @default(false)
+  isEdited       Boolean   @default(false)
   editedAt       DateTime?
-  isDeleted      Boolean  @default(false)
+  isDeleted      Boolean   @default(false)
   deletedAt      DateTime?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   // Relations
   sender       User         @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
@@ -133,4 +134,11 @@ enum FriendRequestStatus {
   ACCEPTED
   DECLINED
   BLOCKED
+}
+
+enum AuthProvider {
+  EMAIL
+  GOOGLE
+  APPLE
+  GITHUB
 }

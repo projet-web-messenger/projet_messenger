@@ -1,12 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `Conversation` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Message` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `UserConversation` table. If the table is not empty, all the data it contains will be lost.
-
-*/
 -- CreateEnum
 CREATE TYPE "UserStatus" AS ENUM ('ONLINE', 'IDLE', 'DO_NOT_DISTURB', 'INVISIBLE', 'OFFLINE');
 
@@ -16,39 +7,20 @@ CREATE TYPE "ConversationType" AS ENUM ('DIRECT_MESSAGE', 'GROUP_CHAT');
 -- CreateEnum
 CREATE TYPE "FriendRequestStatus" AS ENUM ('PENDING', 'ACCEPTED', 'DECLINED', 'BLOCKED');
 
--- DropForeignKey
-ALTER TABLE "Message" DROP CONSTRAINT "Message_conversationId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Message" DROP CONSTRAINT "Message_senderId_fkey";
-
--- DropForeignKey
-ALTER TABLE "UserConversation" DROP CONSTRAINT "UserConversation_conversationId_fkey";
-
--- DropForeignKey
-ALTER TABLE "UserConversation" DROP CONSTRAINT "UserConversation_userId_fkey";
-
--- DropTable
-DROP TABLE "Conversation";
-
--- DropTable
-DROP TABLE "Message";
-
--- DropTable
-DROP TABLE "User";
-
--- DropTable
-DROP TABLE "UserConversation";
+-- CreateEnum
+CREATE TYPE "AuthProvider" AS ENUM ('EMAIL', 'GOOGLE', 'APPLE', 'GITHUB');
 
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "username" TEXT NOT NULL,
+    "kindeId" TEXT NOT NULL,
+    "email" TEXT,
+    "username" TEXT,
     "displayName" TEXT,
     "avatar" TEXT,
     "status" "UserStatus" NOT NULL DEFAULT 'OFFLINE',
     "bio" TEXT,
+    "provider" "AuthProvider" NOT NULL DEFAULT 'EMAIL',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "lastSeenAt" TIMESTAMP(3),
@@ -123,7 +95,7 @@ CREATE TABLE "friend_requests" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+CREATE UNIQUE INDEX "users_kindeId_key" ON "users"("kindeId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
@@ -133,9 +105,6 @@ CREATE UNIQUE INDEX "user_conversations_userId_conversationId_key" ON "user_conv
 
 -- CreateIndex
 CREATE UNIQUE INDEX "friendships_userId_friendId_key" ON "friendships"("userId", "friendId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "friend_requests_senderId_receiverId_key" ON "friend_requests"("senderId", "receiverId");
 
 -- AddForeignKey
 ALTER TABLE "user_conversations" ADD CONSTRAINT "user_conversations_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

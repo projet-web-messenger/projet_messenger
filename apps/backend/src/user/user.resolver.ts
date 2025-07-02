@@ -1,5 +1,5 @@
 import { Args, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
-import type { FriendRequestStatus, UserStatus } from "@prisma/client";
+import type { AuthProvider, FriendRequestStatus, UserStatus } from "@prisma/client";
 import { FriendRequest } from "./friend-request.model";
 import { User } from "./user.model";
 import { UserService } from "./user.service";
@@ -33,6 +33,16 @@ export class UserResolver {
     return this.userService.findById(id);
   }
 
+  @Query(() => User, { nullable: true })
+  async userByEmail(@Args("email") email: string): Promise<User | null> {
+    return this.userService.findByEmail(email);
+  }
+
+  @Query(() => User, { nullable: true })
+  async userByUsername(@Args("username") username: string): Promise<User | null> {
+    return this.userService.findByUsername(username);
+  }
+
   @Query(() => [User])
   async searchUsers(@Args("query") query: string): Promise<User[]> {
     return this.userService.searchUsers(query);
@@ -53,23 +63,59 @@ export class UserResolver {
     return this.userService.getSentFriendRequests(userId);
   }
 
+  // Main mutation for Kinde integration
+  @Mutation(() => User)
+  async createOrUpdateUserFromKinde(
+    @Args("kindeId") kindeId: string,
+    @Args("provider") provider: AuthProvider,
+    @Args("email", { nullable: true }) email?: string,
+    @Args("givenName", { nullable: true }) givenName?: string,
+    @Args("familyName", { nullable: true }) familyName?: string,
+    @Args("picture", { nullable: true }) picture?: string,
+    @Args("username", { nullable: true }) username?: string,
+  ): Promise<User> {
+    return this.userService.createOrUpdateFromKinde(
+      {
+        id: kindeId,
+        email,
+        given_name: givenName,
+        family_name: familyName,
+        picture,
+        username,
+      },
+      provider,
+    );
+  }
+
+  // Updated manual user creation for Kinde system
   @Mutation(() => User)
   async createUser(
-    @Args("email") email: string,
-    @Args("username") username: string,
+    @Args("kindeId") kindeId: string,
+    @Args("provider", { defaultValue: "EMAIL" }) provider: AuthProvider,
+    @Args("email", { nullable: true }) email?: string,
     @Args("displayName", { nullable: true }) displayName?: string,
+    @Args("avatar", { nullable: true }) avatar?: string,
   ): Promise<User> {
-    return this.userService.create({ email, username, displayName });
+    return this.userService.create({
+      id: kindeId,
+      email,
+      displayName,
+      avatar,
+      provider,
+    });
   }
 
   @Mutation(() => User)
   async updateUser(
     @Args("id") id: string,
     @Args("displayName", { nullable: true }) displayName?: string,
+    @Args("email", { nullable: true }) email?: string,
+    @Args("username", { nullable: true }) username?: string,
     @Args("avatar", { nullable: true }) avatar?: string,
     @Args("bio", { nullable: true }) bio?: string,
+    @Args("status", { nullable: true }) status?: UserStatus,
   ): Promise<User> {
-    return this.userService.update(id, { displayName, avatar, bio });
+    return this.userService.update(id, { displayName, avatar, bio, status });
   }
 
   @Mutation(() => User)
@@ -94,5 +140,15 @@ export class UserResolver {
   @Mutation(() => Boolean)
   async removeFriend(@Args("userId") userId: string, @Args("friendId") friendId: string): Promise<boolean> {
     return this.userService.removeFriend(userId, friendId);
+  }
+
+  @Mutation(() => Boolean)
+  async deleteUser(@Args("id") id: string): Promise<boolean> {
+    try {
+      await this.userService.delete(id);
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 }

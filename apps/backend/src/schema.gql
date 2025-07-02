@@ -2,6 +2,13 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+enum AuthProvider {
+  APPLE
+  EMAIL
+  GITHUB
+  GOOGLE
+}
+
 type Conversation {
   avatar: String
   createdAt: DateTime!
@@ -61,8 +68,10 @@ type Message {
 type Mutation {
   createConversation(description: String, name: String, type: String!, userIds: [String!]!): Conversation!
   createDirectMessage(userId1: String!, userId2: String!): Conversation!
-  createUser(displayName: String, email: String!, username: String!): User!
+  createOrUpdateUserFromKinde(email: String, familyName: String, givenName: String, kindeId: String!, picture: String, provider: String!, username: String): User!
+  createUser(avatar: String, displayName: String, email: String, kindeId: String!, provider: String! = "EMAIL"): User!
   deleteMessage(messageId: String!, userId: String!): Message!
+  deleteUser(id: String!): Boolean!
   editMessage(content: String!, messageId: String!, userId: String!): Message!
   joinConversation(conversationId: String!, userId: String!): UserConversation!
   leaveConversation(conversationId: String!, userId: String!): UserConversation!
@@ -73,7 +82,7 @@ type Mutation {
   sendDirectMessage(content: String!, receiverId: String!, senderId: String!): Message!
   sendFriendRequest(receiverId: String!, senderId: String!): FriendRequest!
   sendMessage(content: String!, conversationId: String!, senderId: String!): Message!
-  updateUser(avatar: String, bio: String, displayName: String, id: String!): User!
+  updateUser(avatar: String, bio: String, displayName: String, email: String, id: String!, status: String, username: String): User!
   updateUserStatus(id: String!, status: String!): User!
 }
 
@@ -88,6 +97,8 @@ type Query {
   searchUsers(query: String!): [User!]!
   sentFriendRequests(userId: String!): [FriendRequest!]!
   user(id: String!): User
+  userByEmail(email: String!): User
+  userByUsername(username: String!): User
   userConversations(userId: String!): [UserConversation!]!
 }
 
@@ -96,12 +107,13 @@ type User {
   bio: String
   createdAt: DateTime!
   displayName: String
-  email: String!
+  email: String
   id: ID!
   lastSeenAt: DateTime
+  provider: AuthProvider!
   status: UserStatus!
   updatedAt: DateTime!
-  username: String!
+  username: String
 }
 
 type UserConversation {

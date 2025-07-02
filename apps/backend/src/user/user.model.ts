@@ -1,8 +1,12 @@
 import { Field, ID, ObjectType, registerEnumType } from "@nestjs/graphql";
-import { type User as PrismaUser, UserStatus } from "@prisma/client";
+import { AuthProvider, type User as PrismaUser, UserStatus } from "@prisma/client";
 
 registerEnumType(UserStatus, {
   name: "UserStatus",
+});
+
+registerEnumType(AuthProvider, {
+  name: "AuthProvider",
 });
 
 @ObjectType()
@@ -10,11 +14,11 @@ export class User implements PrismaUser {
   @Field(() => ID)
   id: string;
 
-  @Field(() => String)
-  email: string;
+  @Field(() => String, { nullable: true })
+  email: string | null;
 
-  @Field(() => String)
-  username: string;
+  @Field(() => String, { nullable: true })
+  username: string | null;
 
   @Field(() => String, { nullable: true })
   displayName: string | null;
@@ -27,6 +31,9 @@ export class User implements PrismaUser {
 
   @Field(() => String, { nullable: true })
   bio: string | null;
+
+  @Field(() => AuthProvider)
+  provider: AuthProvider;
 
   @Field(() => Date)
   createdAt: Date;

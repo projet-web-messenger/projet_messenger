@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { type FriendRequest, FriendRequestStatus, type User, UserStatus } from "@prisma/client";
+import { AuthProvider, type FriendRequest, FriendRequestStatus, type User, UserStatus } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
@@ -15,15 +15,9 @@ export class UserService {
       throw new Error("Valid user ID is required");
     }
 
-    const user = this.prisma.user.findUnique({
-      where: { id },
+    return this.prisma.user.findUnique({
+      where: { id }, // This is now the Kinde ID
     });
-
-    if (!user) {
-      throw new Error(`User with ID ${id} not found`);
-    }
-
-    return user;
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -31,15 +25,9 @@ export class UserService {
       throw new Error("Valid email is required");
     }
 
-    const user = this.prisma.user.findUnique({
+    return this.prisma.user.findUnique({
       where: { email },
     });
-
-    if (!user) {
-      throw new Error(`User with email ${email} not found`);
-    }
-
-    return user;
   }
 
   async findByUsername(username: string): Promise<User | null> {
@@ -47,34 +35,153 @@ export class UserService {
       throw new Error("Valid username is required");
     }
 
-    const user = this.prisma.user.findUnique({
+    return this.prisma.user.findUnique({
       where: { username },
     });
-
-    if (!user) {
-      throw new Error(`User with username ${username} not found`);
-    }
-
-    return user;
   }
 
-  async create(data: { email: string; username: string; displayName?: string }): Promise<User> {
-    if (!data.email || !data.username) {
-      throw new Error("Email and username are required to create a user");
+  // New Kinde-specific methods
+  async create(data: {
+    id: string; // This is the Kinde ID
+    email?: string;
+    displayName?: string;
+    avatar?: string;
+    provider: AuthProvider;
+  }): Promise<User> {
+    // Validate required fields
+    if (!data.id || typeof data.id !== "string") {
+      throw new Error("Valid Kinde ID is required to create a user");
     }
 
-    const user = this.prisma.user.create({
-      data,
+    if (!data.provider || !Object.values(AuthProvider).includes(data.provider)) {
+      throw new Error("Valid auth provider is required");
+    }
+
+    // Validate optional fields if provided
+    if (data.email && typeof data.email !== "string") {
+      throw new Error("Email must be a valid string");
+    }
+
+    if (data.displayName && typeof data.displayName !== "string") {
+      throw new Error("Display name must be a valid string");
+    }
+
+    if (data.avatar && typeof data.avatar !== "string") {
+      throw new Error("Avatar must be a valid string");
+    }
+
+    // Check if user already exists
+    const existingUser = await this.prisma.user.findUnique({
+      where: { id: data.id },
     });
 
-    if (!user) {
-      throw new Error("Failed to create user");
+    if (existingUser) {
+      throw new Error("User with this Kinde ID already exists");
     }
+
+    // Generate username if not provided
+    const username = await this.generateUniqueUsername(data.displayName || data.email);
+
+    const user = await this.prisma.user.create({
+      data: {
+        id: data.id, // Kinde ID as primary key
+        email: data.email,
+        username,
+        displayName: data.displayName,
+        avatar: data.avatar,
+        provider: data.provider,
+      },
+    });
 
     return user;
   }
 
-  async update(id: string, data: { displayName?: string; avatar?: string; bio?: string; status?: UserStatus }): Promise<User> {
+  async createOrUpdateFromKinde(
+    kindeUser: {
+      id: string;
+      email?: string;
+      given_name?: string;
+      family_name?: string;
+      picture?: string;
+      username?: string;
+    },
+    provider: AuthProvider,
+  ): Promise<User> {
+    const existingUser = await this.findById(kindeUser.id);
+
+    const displayName =
+      kindeUser.given_name && kindeUser.family_name
+        ? `${kindeUser.given_name} ${kindeUser.family_name}`
+        : kindeUser.given_name || kindeUser.username || kindeUser.email?.split("@")[0];
+
+    if (existingUser) {
+      // Update existing user
+      return this.prisma.user.update({
+        where: { id: kindeUser.id },
+        data: {
+          email: kindeUser.email || existingUser.email,
+          displayName: displayName || existingUser.displayName,
+          avatar: kindeUser.picture || existingUser.avatar,
+          provider,
+        },
+      });
+    }
+    // Create new user
+    return this.create({
+      id: kindeUser.id, // Kinde ID as primary key
+      email: kindeUser.email,
+      displayName,
+      avatar: kindeUser.picture,
+      provider,
+    });
+  }
+
+  // Helper method to generate unique username
+  private async generateUniqueUsername(baseName?: string): Promise<string> {
+    // Validate baseName if provided
+    if (baseName !== undefined && typeof baseName !== "string") {
+      throw new Error("Base name must be a valid string");
+    }
+
+    let baseUsername =
+      baseName
+        ?.toLowerCase()
+        .replace(/[^a-z0-9]/g, "") // Remove special characters
+        .slice(0, 20) || // Limit length
+      "user";
+
+    // If base is too short, add some default
+    if (baseUsername.length < 3) {
+      baseUsername = `user${baseUsername}`;
+    }
+
+    let username = baseUsername;
+    let counter = 1;
+
+    // Keep trying until we find a unique username
+    while (true) {
+      const existingUser = await this.prisma.user.findUnique({
+        where: { username },
+      });
+
+      if (!existingUser) {
+        return username;
+      }
+
+      username = `${baseUsername}${counter}`;
+      counter++;
+
+      // Add safety check to prevent infinite loops
+      if (counter > 10000) {
+        throw new Error("Unable to generate unique username after 10000 attempts");
+      }
+    }
+  }
+
+  async update(
+    id: string,
+    data: { email?: string; username?: string; displayName?: string; avatar?: string; bio?: string; status?: UserStatus },
+  ): Promise<User> {
     if (!id || typeof id !== "string") {
       throw new Error("Valid user ID is required");
     }
@@ -83,14 +190,75 @@ export class UserService {
       throw new Error("No data provided for update");
     }
 
-    const user = this.prisma.user.update({
+    // Check if user exists
+    const existingUser = await this.prisma.user.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+
+    if (!existingUser) {
+      throw new Error(`User with ID ${id} not found`);
+    }
+
+    // Validate email if provided
+    if (data.email !== undefined) {
+      if (typeof data.email !== "string") {
+        throw new Error("Email must be a valid string");
+      }
+      // Check if email is already taken by another user
+      const userWithEmail = await this.prisma.user.findUnique({
+        where: { email: data.email },
+        select: { id: true },
+      });
+      if (userWithEmail && userWithEmail.id !== id) {
+        throw new Error("Email is already taken by another user");
+      }
+    }
+
+    // Validate username if provided
+    if (data.username !== undefined) {
+      if (typeof data.username !== "string") {
+        throw new Error("Username must be a valid string");
+      }
+      // Check if username is already taken by another user
+      const userWithUsername = await this.prisma.user.findUnique({
+        where: { username: data.username },
+        select: { id: true },
+      });
+      if (userWithUsername && userWithUsername.id !== id) {
+        throw new Error("Username is already taken by another user");
+      }
+    }
+
+    // Validate displayName if provided
+    if (data.displayName !== undefined && typeof data.displayName !== "string") {
+      throw new Error("Display name must be a valid string");
+    }
+
+    // Validate avatar if provided
+    if (data.avatar !== undefined && typeof data.avatar !== "string") {
+      throw new Error("Avatar must be a valid string");
+    }
+
+    // Validate bio if provided
+    if (data.bio !== undefined) {
+      if (typeof data.bio !== "string") {
+        throw new Error("Bio must be a valid string");
+      }
+      if (data.bio.length > 500) {
+        throw new Error("Bio cannot exceed 500 characters");
+      }
+    }
+
+    // Validate status if provided
+    if (data.status !== undefined && !Object.values(UserStatus).includes(data.status)) {
+      throw new Error("Invalid user status");
+    }
+
+    const user = await this.prisma.user.update({
       where: { id },
       data,
     });
-
-    if (!user) {
-      throw new Error(`User with ID ${id} not found`);
-    }
 
     return user;
   }
@@ -100,21 +268,27 @@ export class UserService {
       throw new Error("Valid user ID is required");
     }
 
-    if (!Object.values(UserStatus).includes(status)) {
-      throw new Error("Invalid user status");
+    if (!status || !Object.values(UserStatus).includes(status)) {
+      throw new Error("Valid user status is required");
     }
 
-    const user = this.prisma.user.update({
+    // Check if user exists
+    const existingUser = await this.prisma.user.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+
+    if (!existingUser) {
+      throw new Error(`User with ID ${id} not found`);
+    }
+
+    const user = await this.prisma.user.update({
       where: { id },
       data: {
         status,
         lastSeenAt: status === UserStatus.OFFLINE ? new Date() : null,
       },
     });
-
-    if (!user) {
-      throw new Error(`User with ID ${id} not found`);
-    }
 
     return user;
   }
@@ -124,13 +298,19 @@ export class UserService {
       throw new Error("Valid user ID is required");
     }
 
-    const user = this.prisma.user.delete({
+    // Check if user exists before attempting to delete
+    const existingUser = await this.prisma.user.findUnique({
       where: { id },
+      select: { id: true },
     });
 
-    if (!user) {
+    if (!existingUser) {
       throw new Error(`User with ID ${id} not found`);
     }
+
+    const user = await this.prisma.user.delete({
+      where: { id },
+    });
 
     return user;
   }
@@ -138,6 +318,15 @@ export class UserService {
   async searchUsers(query: string): Promise<User[]> {
     if (!query || typeof query !== "string") {
       throw new Error("Valid search query is required");
+    }
+
+    // Additional validation for query length and content
+    if (query.trim().length === 0) {
+      throw new Error("Search query cannot be empty");
+    }
+
+    if (query.length > 100) {
+      throw new Error("Search query is too long (maximum 100 characters)");
     }
 
     return this.prisma.user.findMany({
@@ -151,7 +340,7 @@ export class UserService {
     });
   }
 
-  // Friend Request Methods
+  // Friend Request Methods remain the same since they use user IDs
   async sendFriendRequest(senderId: string, receiverId: string): Promise<FriendRequest> {
     // Check if users exist
     const [sender, receiver] = await Promise.all([
@@ -196,9 +385,11 @@ export class UserService {
       throw new Error("Friend request already exists");
     }
 
-    return this.prisma.friendRequest.create({
+    const friendRequest = await this.prisma.friendRequest.create({
       data: { senderId, receiverId },
     });
+
+    return friendRequest;
   }
 
   async respondToFriendRequest(requestId: string, userId: string, status: FriendRequestStatus): Promise<FriendRequest> {
@@ -243,19 +434,13 @@ export class UserService {
       throw new Error("Valid user ID is required");
     }
 
-    const user = this.prisma.friendRequest.findMany({
+    return this.prisma.friendRequest.findMany({
       where: {
         receiverId: userId,
         status: FriendRequestStatus.PENDING,
       },
       orderBy: { createdAt: "desc" },
     });
-
-    if (!user) {
-      throw new Error(`User with ID ${userId} not found`);
-    }
-
-    return user;
   }
 
   async getSentFriendRequests(userId: string): Promise<FriendRequest[]> {
@@ -263,19 +448,13 @@ export class UserService {
       throw new Error("Valid user ID is required");
     }
 
-    const user = this.prisma.friendRequest.findMany({
+    return this.prisma.friendRequest.findMany({
       where: {
         senderId: userId,
         status: FriendRequestStatus.PENDING,
       },
       orderBy: { createdAt: "desc" },
     });
-
-    if (!user) {
-      throw new Error(`User with ID ${userId} not found`);
-    }
-
-    return user;
   }
 
   async getFriends(userId: string): Promise<User[]> {
