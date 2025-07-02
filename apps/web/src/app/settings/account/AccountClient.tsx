@@ -65,7 +65,7 @@ export default function AccountClient({ userInfo }: AccountClientProps) {
             🎮
           </div>
           <div className="mt-8 flex-1 text-center md:text-left">
-            <h2 className="mt-2 font-semibold text-xl">{userInfo?.given_name ?? "User"}</h2>
+            <h2 className="mt-2 font-semibold text-xl">{`${userInfo?.given_name || ""} ${userInfo?.family_name || ""}`.trim() || "User"}</h2>
           </div>
           <div className="mt-8">
             <button type="button" className="mt-8 rounded-sm bg-blue-500 px-4 py-2 font-medium text-sm text-white transition hover:bg-blue-600">
