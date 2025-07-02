@@ -1,4 +1,5 @@
 @utility bg-* {
+  --bg-opacity: 100%;
   --bg-opacity: --modifier(integer)%;
 
   --bg-currentcolor: --alpha(--value('current')color / var(--bg-opacity, 100%));

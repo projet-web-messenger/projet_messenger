@@ -165,6 +165,12 @@ importers:
 
   apps/web:
     dependencies:
+      '@kinde-oss/kinde-auth-nextjs':
+        specifier: ^2.8.0
+        version: 2.8.1(eslint@9.29.0(jiti@2.4.2))(next@15.3.0(@babel/core@7.27.4)(babel-plugin-react-compiler@19.0.0-beta-ebf51a3-20250411)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.8.2)
+      '@kinde/management-api-js':
+        specifier: ^0.14.0
+        version: 0.14.0
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -192,6 +198,9 @@ importers:
       react-scan:
         specifier: ^0.3.3
         version: 0.3.6(@types/react@19.1.0)(next@15.3.0(@babel/core@7.27.4)(babel-plugin-react-compiler@19.0.0-beta-ebf51a3-20250411)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
     devDependencies:
       '@repo/tailwind-config':
         specifier: workspace:*
@@ -1375,6 +1384,41 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
+
+  '@kinde-oss/kinde-auth-nextjs@2.8.1':
+    resolution: {integrity: sha512-YEaHIOIAeISOuO0g6sKo+LGfpG2i2ge+KiuJVloHgXJxk2pccJVqrIbLGntm33GwP92AYZmatk8pQBSHRvYT0Q==}
+    peerDependencies:
+      next: ^12.3.5 || ^13.5.9 || ^14.2.25 || ^15.2.3
+      react: ^18 || ^19
+      react-dom: ^18 || ^19
+
+  '@kinde-oss/kinde-typescript-sdk@2.11.1':
+    resolution: {integrity: sha512-jes7NKI4qyYI4XOnq7u4Dfm1gO8f3o7MM+Zy4geg/0A6qz1QV6MvXtM19K0sBbWxPvWIfX+jGRCwnauQKrbe8g==}
+
+  '@kinde/js-utils@0.18.3':
+    resolution: {integrity: sha512-U4j4DvwKYlzOUxkl8yBUfa8WeQh6m6koKuYZyURUBPd0V+vkFsRId2SEJkbwuXL7U/ftX7jo63wXZHNvVYpuWw==}
+    peerDependencies:
+      expo-secure-store: '>=11.0.0'
+    peerDependenciesMeta:
+      expo-secure-store:
+        optional: true
+
+  '@kinde/js-utils@0.19.0':
+    resolution: {integrity: sha512-PvbyHxYMkR7Cgc8UG49qXJGGonIsu1MaDkmZRVhhh6Iok7t9tty62k0eCY5EyuN/lWpCG/3/jz6Gb3aAgixzmw==}
+    peerDependencies:
+      expo-secure-store: '>=11.0.0'
+    peerDependenciesMeta:
+      expo-secure-store:
+        optional: true
+
+  '@kinde/jwt-decoder@0.2.0':
+    resolution: {integrity: sha512-dqtwCmAvywOVLkkUfp4UbqdvVLsK0cvHsJhU3gDY9rgjAdZhGw0vCreBW6j3MFLxbi6cZm7pMU7/O5SJgvN5Rw==}
+
+  '@kinde/jwt-validator@0.4.0':
+    resolution: {integrity: sha512-aseXLTD/rh/rZ2v85Xy493CEtuC49MA4Hbt6ObccqSJfIGLAeMrAtBh2m9DleigVkMuZ/99/U4PqLnaVDLt5OQ==}
+
+  '@kinde/management-api-js@0.14.0':
+    resolution: {integrity: sha512-4BUsr7+eHI9hIFGkqasmQ5oUAYiM2LaKmQVyOB4Gf5K+7DToHXiHZCmlgB/syeu3cBzItj04zLgOjEdg1lkXNA==}
 
   '@lukeed/csprng@1.1.0':
     resolution: {integrity: sha512-Z7C/xXCiGWsg0KuKsHTKJxbWhpI3Vs5GwLfOean7MGyVFGqdRgBbAjOCh6u4bbjPc/8MJ2pZmK/0DLdCbivLDA==}
@@ -2898,6 +2942,10 @@ packages:
   asynckit@0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
 
+  aws-jwt-verify@5.1.0:
+    resolution: {integrity: sha512-98ioOBMyrLU5jW5rPvkJo20XlNB2rAX3tZR3BM6AamfBkOoSRLV1EyGkbgHQzgFOWyQ7yV8+tce6M24rOpMkgw==}
+    engines: {node: '>=18.0.0'}
+
   b4a@1.6.7:
     resolution: {integrity: sha512-OnAYlL5b7LEkALw87fUVafQw5rVR9RjwGd4KUwNQ6DrrNmaVaUCgLipfVlzrPQ4tWOR9P0IXGNOx50jYCCdSJg==}
 
@@ -3225,6 +3273,10 @@ packages:
     resolution: {integrity: sha512-yki5XnKuf750l50uGTllt6kKILY4nQ1eNIQatoXEByZ5dWgnKqbnqmTrBE5B4N7lrMJKQ2ytWMiTO2o0v6Ew/w==}
     engines: {node: '>= 0.6'}
 
+  cookie@1.0.2:
+    resolution: {integrity: sha512-9Kr/j4O16ISv8zBBhJoi4bXOYNTkFLOqSL3UDB0njXxCXNezjeyVrJyGOWtgfs/q2km1gwBcfH8q1yEGoMYunA==}
+    engines: {node: '>=18'}
+
   cookiejar@2.1.4:
     resolution: {integrity: sha512-LDx6oHrK+PhzLKJU9j5S7/Y3jM/mUHvD/DeI1WQmJn652iPC5Y4TBzC9l+5OMOXlyTTA+SmVUPm0HQUwpD5Jqw==}
 
@@ -3259,6 +3311,9 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
+
+  crypto-js@4.2.0:
+    resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
 
   cssesc@3.0.0:
     resolution: {integrity: sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg==}
@@ -3366,6 +3421,10 @@ packages:
 
   dlv@1.1.3:
     resolution: {integrity: sha512-+HlytyjlPKnIG8XuRG8WvmBP8xs8P71y+SKKS6ZXWoEgLuePxtDoUEiH7WkdePWrQ5JBpE6aoVqfZfJUQkjXwA==}
+
+  dotenv@16.6.1:
+    resolution: {integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==}
+    engines: {node: '>=12'}
 
   dset@3.1.4:
     resolution: {integrity: sha512-2QF/g9/zTaPDc3BjNcVTGoBbXBgYfMTTceLaYcFJ/W9kggFUkhxD/hMEeuLKbugyef9SqAx8cpgwlIP/jinUTA==}
@@ -4215,6 +4274,9 @@ packages:
     resolution: {integrity: sha512-rg9zJN+G4n2nfJl5MW3BMygZX56zKPNVEYYqq7adpmMh4Jn2QNEwhvQlFy6jPVdcod7txZtKHWnyZiA3a0zP7A==}
     hasBin: true
 
+  jose@6.0.11:
+    resolution: {integrity: sha512-QxG7EaliDARm1O1S8BGakqncGT9s25bKL1WSf6/oa17Tkqwi8D2ZNglqCF+DsYF88/rV66Q/Q2mFAy697E1DUg==}
+
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
@@ -4256,6 +4318,9 @@ packages:
 
   jsonfile@6.1.0:
     resolution: {integrity: sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==}
+
+  jsrsasign@11.1.0:
+    resolution: {integrity: sha512-Ov74K9GihaK9/9WncTe1mPmvrO7Py665TUfUKvraXBpu+xcTWitrtuOwcjf4KMU9maPaYn0OuaWy0HOzy/GBXg==}
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
@@ -5202,6 +5267,9 @@ packages:
     resolution: {integrity: sha512-61g9pCh0Vnh7IutZjtLGGpTA355+OPn2TyDv/6ivP2h/AdAVX9azsoxmg2/M6nZeQZNYBEwIcsne1mJd9oQItQ==}
     engines: {node: '>= 18'}
 
+  server-only@0.0.1:
+    resolution: {integrity: sha512-qepMx2JxAa5jjfzxG79yPPq+8BuFToHd1hm7kI+Z4zAq1ftQiP7HcxMhDDItrbtwVeLg/cY2JnKnrcFkmiswNA==}
+
   setprototypeof@1.2.0:
     resolution: {integrity: sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==}
 
@@ -5690,6 +5758,9 @@ packages:
 
   unbzip2-stream@1.4.3:
     resolution: {integrity: sha512-mlExGW4w71ebDJviH16lQLtZS32VKqsSfk80GCfUlwT/4/hNRFsoscrF/c++9xinkMzECL1uL9DDwXqFWkruPg==}
+
+  uncrypto@0.1.3:
+    resolution: {integrity: sha512-Ql87qFHB3s/De2ClA9e0gsnS6zXG27SkTiSJwjCc9MebbfapQfuPzumMIUMi38ezPZVNFcHI9sUIepeQfw8J8Q==}
 
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
@@ -7086,6 +7157,57 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
+
+  '@kinde-oss/kinde-auth-nextjs@2.8.1(eslint@9.29.0(jiti@2.4.2))(next@15.3.0(@babel/core@7.27.4)(babel-plugin-react-compiler@19.0.0-beta-ebf51a3-20250411)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.8.2)':
+    dependencies:
+      '@kinde-oss/kinde-typescript-sdk': 2.11.1(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.2)
+      '@kinde/js-utils': 0.18.3
+      '@kinde/jwt-decoder': 0.2.0
+      '@kinde/jwt-validator': 0.4.0
+      cookie: 1.0.2
+      crypto-js: 4.2.0
+      next: 15.3.0(@babel/core@7.27.4)(babel-plugin-react-compiler@19.0.0-beta-ebf51a3-20250411)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+      uncrypto: 0.1.3
+    transitivePeerDependencies:
+      - eslint
+      - expo-secure-store
+      - supports-color
+      - typescript
+
+  '@kinde-oss/kinde-typescript-sdk@2.11.1(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.2)':
+    dependencies:
+      '@kinde/js-utils': 0.19.0
+      '@typescript-eslint/parser': 8.34.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.2)
+      jose: 6.0.11
+      uncrypto: 0.1.3
+    transitivePeerDependencies:
+      - eslint
+      - expo-secure-store
+      - supports-color
+      - typescript
+
+  '@kinde/js-utils@0.18.3':
+    dependencies:
+      '@kinde/jwt-decoder': 0.2.0
+
+  '@kinde/js-utils@0.19.0':
+    dependencies:
+      '@kinde/jwt-decoder': 0.2.0
+
+  '@kinde/jwt-decoder@0.2.0': {}
+
+  '@kinde/jwt-validator@0.4.0':
+    dependencies:
+      '@kinde/jwt-decoder': 0.2.0
+      jsrsasign: 11.1.0
+
+  '@kinde/management-api-js@0.14.0':
+    dependencies:
+      '@kinde/jwt-decoder': 0.2.0
+      aws-jwt-verify: 5.1.0
+      dotenv: 16.6.1
 
   '@lukeed/csprng@1.1.0': {}
 
@@ -8649,6 +8771,8 @@ snapshots:
 
   asynckit@0.4.0: {}
 
+  aws-jwt-verify@5.1.0: {}
+
   b4a@1.6.7: {}
 
   babel-jest@29.7.0(@babel/core@7.27.4):
@@ -9008,6 +9132,8 @@ snapshots:
 
   cookie@0.7.2: {}
 
+  cookie@1.0.2: {}
+
   cookiejar@2.1.4: {}
 
   core-util-is@1.0.3: {}
@@ -9052,6 +9178,8 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  crypto-js@4.2.0: {}
 
   cssesc@3.0.0: {}
 
@@ -9113,6 +9241,8 @@ snapshots:
   diff@4.0.2: {}
 
   dlv@1.1.3: {}
+
+  dotenv@16.6.1: {}
 
   dset@3.1.4: {}
 
@@ -10275,6 +10405,8 @@ snapshots:
 
   jiti@2.4.2: {}
 
+  jose@6.0.11: {}
+
   js-tokens@4.0.0: {}
 
   js-yaml@3.14.1:
@@ -10307,6 +10439,8 @@ snapshots:
       universalify: 2.0.1
     optionalDependencies:
       graceful-fs: 4.2.11
+
+  jsrsasign@11.1.0: {}
 
   keyv@4.5.4:
     dependencies:
@@ -11164,6 +11298,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  server-only@0.0.1: {}
+
   setprototypeof@1.2.0: {}
 
   sha.js@2.4.11:
@@ -11743,6 +11879,8 @@ snapshots:
     dependencies:
       buffer: 5.7.1
       through: 2.3.8
+
+  uncrypto@0.1.3: {}
 
   undici-types@6.21.0: {}
 

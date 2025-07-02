@@ -1,9 +1,27 @@
-export default function Home() {
-  return (
-    <div className="relative m-5 space-y-6 rounded-xl border p-5">
-      <h2 className="text-xl">Welcome to Messenger!</h2>
-      <p className="text-sm opacity-60">Chat with classmates, organize group discussions, and stay connected.</p>
-      <p className="text-sm opacity-60">Sign up or log in to start messaging.</p>
-    </div>
-  );
+import { isAuthenticated } from "@/actions/user";
+import { redirect } from "next/navigation";
+
+/**
+ * Home page that redirects users based on authentication status
+ * - Unauthenticated users -> /login
+ * - Authenticated users -> /channels/@me
+ */
+export default async function HomePage() {
+  const authenticated = await isAuthenticated();
+
+  if (!authenticated) {
+    redirect("/login");
+  }
+
+  // Redirect authenticated users to the main app
+  redirect("/channels/@me");
 }
+
+// Add metadata for better SEO
+export const metadata = {
+  title: "Messenger App",
+  description: "Connect and chat with friends",
+};
+
+// Disable static generation since this page depends on authentication
+export const dynamic = "force-dynamic";

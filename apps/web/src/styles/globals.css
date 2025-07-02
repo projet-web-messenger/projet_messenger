@@ -24,10 +24,10 @@
     --color-success: var(--color-green-500);
     --color-info: var(--color-blue-500);
     --color-shadow: var(--color-gray-900);
-    --colors-shadow-5: --alpha(var(--color-black) / 5%);
-    --colors-shadow-10: --alpha(var(--color-black) / 10%);
-    --colors-shadow-16: --alpha(var(--color-black) / 16%);
-    --colors-shadow-30: --alpha(var(--color-black) / 30%);
+    --color-shadow-5: --alpha(var(--color-black) / 5%);
+    --color-shadow-10: --alpha(var(--color-black) / 10%);
+    --color-shadow-16: --alpha(var(--color-black) / 16%);
+    --color-shadow-30: --alpha(var(--color-black) / 30%);
   }
 
   :root[data-theme="dark"] {
@@ -44,10 +44,10 @@
     --color-warning: var(--color-orange-400);
     --color-success: var(--color-green-400);
     --color-info: var(--color-blue-400);
-    --colors-shadow-10: --alpha(var(--color-black) / 64%);
-    --colors-shadow-16: --alpha(var(--color-black) / 64%);
-    --colors-shadow-20: inset --alpha(var(--color-gray-300) / 20%);
-    --colors-shadow-30: inset --alpha(var(--color-gray-300) / 30%);
+    --color-shadow-10: --alpha(var(--color-black) / 64%);
+    --color-shadow-16: --alpha(var(--color-black) / 64%);
+    --color-shadow-20: inset --alpha(var(--color-gray-300) / 20%);
+    --color-shadow-30: inset --alpha(var(--color-gray-300) / 30%);
   }
 
   :root {

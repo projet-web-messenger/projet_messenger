@@ -1,5 +1,4 @@
 import { ThemeProvider } from "@/providers/theme";
-import { Container } from "@repo/ui/layout/container";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { ReactScan } from "./react-scan";
@@ -22,7 +21,7 @@ export default function RootLayout({ children }: Readonly<React.PropsWithChildre
       <body className={`${quicksand.variable} antialiased`}>
         <ReactScan />
         <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <Container className="max-w-screen-md duration-moderate">{children}</Container>
+          {children}
         </ThemeProvider>
       </body>
     </html>

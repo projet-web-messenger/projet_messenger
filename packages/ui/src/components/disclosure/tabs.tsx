@@ -359,7 +359,7 @@ export const TabsTrigger: UixComponent<"button", PropsOf<typeof TabsPrimitive.Tr
     <TabsPrimitive.Trigger asChild value={value} {...remainingProps}>
       <uix.button
         asChild={asChild}
-        className={cn("h-auto opacity-70 [outline:0] aria-[selected=true]:relative aria-[selected=true]:opacity-100", fitted && "flex-1", className)}
+        className={cn("opacity-70 [outline:0] aria-[selected=true]:relative aria-[selected=true]:opacity-100", fitted && "flex-1", className)}
         data-part="trigger"
         data-scope="tabs"
         data-value={value}

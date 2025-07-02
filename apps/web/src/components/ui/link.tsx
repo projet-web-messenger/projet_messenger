@@ -4,10 +4,10 @@ import type { Assign } from "@repo/utils/types";
 import NextLink from "next/link";
 
 export function Link(props: Assign<PropsOf<typeof UixLink>, Omit<PropsOf<typeof NextLink>, "as">>) {
-  const { children, ...rest } = props;
+  const { children, href, ...rest } = props;
   return (
-    <UixLink as={NextLink} {...rest}>
-      {children}
+    <UixLink asChild {...rest}>
+      <NextLink href={href}>{children}</NextLink>
     </UixLink>
   );
 }
