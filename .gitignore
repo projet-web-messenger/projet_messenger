@@ -4,6 +4,10 @@
 node_modules
 .pnp
 .pnp.js
+*.log
+.npm
+.cache
+*.local
 
 # Local env files
 .env
@@ -26,7 +30,6 @@ coverage
 out/
 build
 dist
-
 
 # Debug
 npm-debug.log*
