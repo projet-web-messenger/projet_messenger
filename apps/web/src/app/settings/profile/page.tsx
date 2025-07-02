@@ -4,7 +4,7 @@ import Sidebar from "@/components/app/sidebar";
 import { useState } from "react";
 import { IoSettingsSharp } from "react-icons/io5";
 
-export default function Page() {
+export default async function Page() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [displayName, setDisplayName] = useState("Toto");
   const [pronouns, setPronouns] = useState("Sonia");
