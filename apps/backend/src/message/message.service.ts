@@ -7,9 +7,19 @@ export class MessageService {
   constructor(private prisma: PrismaService) {}
 
   async findById(id: string): Promise<Message | null> {
-    return this.prisma.message.findUnique({
+    if (!id || typeof id !== "string") {
+      throw new Error("Valid message ID is required");
+    }
+
+    const message = this.prisma.message.findUnique({
       where: { id },
     });
+
+    if (!message) {
+      throw new Error(`Message with ID ${id} not found`);
+    }
+
+    return message;
   }
 
   async findByConversationId(conversationId: string, limit?: number, offset?: number): Promise<Message[]> {
@@ -48,11 +58,7 @@ export class MessageService {
     });
   }
 
-  async sendMessage(data: {
-    senderId: string;
-    conversationId: string;
-    content: string;
-  }): Promise<Message> {
+  async sendMessage(data: { senderId: string; conversationId: string; content: string }): Promise<Message> {
     const { senderId, conversationId, content } = data;
 
     // Verify conversation exists
@@ -95,11 +101,7 @@ export class MessageService {
     return message;
   }
 
-  async sendDirectMessage(data: {
-    senderId: string;
-    receiverId: string;
-    content: string;
-  }): Promise<Message> {
+  async sendDirectMessage(data: { senderId: string; receiverId: string; content: string }): Promise<Message> {
     const { senderId, receiverId, content } = data;
 
     // Verify both users exist
@@ -154,6 +156,10 @@ export class MessageService {
       throw new Error("Message not found or user not authorized");
     }
 
+    if (!newContent || typeof newContent !== "string") {
+      throw new Error("Valid new content is required");
+    }
+
     if (message.isDeleted) {
       throw new Error("Cannot edit deleted message");
     }
@@ -169,6 +175,14 @@ export class MessageService {
   }
 
   async deleteMessage(messageId: string, userId: string): Promise<Message> {
+    if (!messageId || typeof messageId !== "string") {
+      throw new Error("Valid message ID is required");
+    }
+
+    if (!userId || typeof userId !== "string") {
+      throw new Error("Valid user ID is required");
+    }
+
     // Verify the user owns the message
     const message = await this.prisma.message.findUnique({
       where: { id: messageId },
@@ -187,8 +201,30 @@ export class MessageService {
       },
     });
   }
-
   async getMessagesBetweenUsers(user1Id: string, user2Id: string): Promise<Message[]> {
+    // Validate user IDs
+    if (!user1Id || typeof user1Id !== "string") {
+      throw new Error("Valid user1Id is required");
+    }
+
+    if (!user2Id || typeof user2Id !== "string") {
+      throw new Error("Valid user2Id is required");
+    }
+
+    if (user1Id === user2Id) {
+      throw new Error("Cannot get messages between the same user");
+    }
+
+    // Verify both users exist
+    const [user1, user2] = await Promise.all([
+      this.prisma.user.findUnique({ where: { id: user1Id } }),
+      this.prisma.user.findUnique({ where: { id: user2Id } }),
+    ]);
+
+    if (!user1 || !user2) {
+      throw new Error("One or both users do not exist");
+    }
+
     // Find DM conversation between users
     const conversation = await this.prisma.conversation.findFirst({
       where: {
