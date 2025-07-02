@@ -1,5 +1,5 @@
 import { Field, ID, ObjectType } from "@nestjs/graphql";
-import { Friendship as PrismaFriendship } from "@prisma/client";
+import type { Friendship as PrismaFriendship } from "@prisma/client";
 
 @ObjectType()
 export class Friendship implements PrismaFriendship {

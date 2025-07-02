@@ -1,6 +1,6 @@
+import { MessageModule } from "@/message/message.module";
+import { UserModule } from "@/user/user.module";
 import { Module } from "@nestjs/common";
-import { MessageModule } from "src/message/message.module";
-import { UserModule } from "../user/user.module";
 import { ConversationResolver, UserConversationResolver } from "./conversation.resolver";
 import { ConversationService } from "./conversation.service";
 

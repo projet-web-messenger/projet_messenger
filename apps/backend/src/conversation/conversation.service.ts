@@ -1,6 +1,6 @@
+import type { PrismaService } from "@/prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
 import { type Conversation, ConversationType, type UserConversation } from "@prisma/client";
-import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class ConversationService {
@@ -22,8 +22,8 @@ export class ConversationService {
   }
 
   async findUserConversations(userId: string): Promise<UserConversation[]> {
-     if (!userId || typeof userId !== 'string') {
-      throw new Error('Valid userId is required');
+    if (!userId || typeof userId !== "string") {
+      throw new Error("Valid userId is required");
     }
 
     // Validate that user exists
@@ -53,11 +53,11 @@ export class ConversationService {
     userIds: string[];
   }): Promise<Conversation> {
     if (!data.userIds || data.userIds.length === 0) {
-      throw new Error('At least one user ID is required');
+      throw new Error("At least one user ID is required");
     }
 
     if (!Object.values(ConversationType).includes(data.type)) {
-      throw new Error('Invalid conversation type');
+      throw new Error("Invalid conversation type");
     }
 
     // Validate that all user IDs exist
@@ -70,11 +70,11 @@ export class ConversationService {
       select: { id: true },
     });
 
-    const existingUserIds = existingUsers.map(user => user.id);
-    const invalidUserIds = data.userIds.filter(id => !existingUserIds.includes(id));
+    const existingUserIds = existingUsers.map((user) => user.id);
+    const invalidUserIds = data.userIds.filter((id) => !existingUserIds.includes(id));
 
     if (invalidUserIds.length > 0) {
-      throw new Error(`Invalid user IDs: ${invalidUserIds.join(', ')}`);
+      throw new Error(`Invalid user IDs: ${invalidUserIds.join(", ")}`);
     }
 
     const { userIds, ...conversationData } = data;

@@ -1,5 +1,5 @@
 import { Field, ID, ObjectType, registerEnumType } from "@nestjs/graphql";
-import { FriendRequestStatus, FriendRequest as PrismaFriendRequest } from "@prisma/client";
+import { FriendRequestStatus, type FriendRequest as PrismaFriendRequest } from "@prisma/client";
 
 registerEnumType(FriendRequestStatus, {
   name: "FriendRequestStatus",

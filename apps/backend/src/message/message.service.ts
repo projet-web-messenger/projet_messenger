@@ -1,6 +1,6 @@
+import type { PrismaService } from "@/prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
 import type { Message } from "@prisma/client";
-import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class MessageService {
@@ -14,8 +14,8 @@ export class MessageService {
 
   async findByConversationId(conversationId: string, limit?: number, offset?: number): Promise<Message[]> {
     // Validate conversationId
-    if (!conversationId || typeof conversationId !== 'string') {
-      throw new Error('Valid conversationId is required');
+    if (!conversationId || typeof conversationId !== "string") {
+      throw new Error("Valid conversationId is required");
     }
 
     // Check if conversation exists
@@ -24,17 +24,17 @@ export class MessageService {
     });
 
     if (!conversation) {
-      throw new Error('Conversation does not exist');
+      throw new Error("Conversation does not exist");
     }
 
     // Validate limit if provided
-    if (limit !== undefined && (typeof limit !== 'number' || limit < 0)) {
-      throw new Error('Limit must be a non-negative number');
+    if (limit !== undefined && (typeof limit !== "number" || limit < 0)) {
+      throw new Error("Limit must be a non-negative number");
     }
 
     // Validate offset if provided
-    if (offset !== undefined && (typeof offset !== 'number' || offset < 0)) {
-      throw new Error('Offset must be a non-negative number');
+    if (offset !== undefined && (typeof offset !== "number" || offset < 0)) {
+      throw new Error("Offset must be a non-negative number");
     }
 
     return this.prisma.message.findMany({

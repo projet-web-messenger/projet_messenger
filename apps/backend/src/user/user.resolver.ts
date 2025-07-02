@@ -2,7 +2,8 @@ import { Args, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/g
 import type { FriendRequestStatus, UserStatus } from "@prisma/client";
 import { FriendRequest } from "./friend-request.model";
 import { User } from "./user.model";
-import { UserService } from "./user.service";
+import type { UserService } from "./user.service";
+
 @Resolver(() => FriendRequest)
 export class FriendRequestResolver {
   constructor(private userService: UserService) {}
@@ -82,7 +83,11 @@ export class UserResolver {
   }
 
   @Mutation(() => FriendRequest)
-  async respondToFriendRequest(@Args("requestId") requestId: string, @Args("userId") userId: string, @Args("status") status: FriendRequestStatus): Promise<FriendRequest> {
+  async respondToFriendRequest(
+    @Args("requestId") requestId: string,
+    @Args("userId") userId: string,
+    @Args("status") status: FriendRequestStatus,
+  ): Promise<FriendRequest> {
     return this.userService.respondToFriendRequest(requestId, userId, status);
   }
 
