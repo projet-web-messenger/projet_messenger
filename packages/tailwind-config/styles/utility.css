@@ -1,15 +1,23 @@
 @utility bg-* {
-  --bg-opacity: --modifier(integer)%;
+  --bg-opacity: 100%;
+  --bg-opacity: --modifier(integer) %;
 
-  --bg-currentcolor: --alpha(--value('current')color / var(--bg-opacity, 100%));
+  --bg-currentcolor: --alpha(
+    --value("current") color / var(--bg-opacity, 100%)
+  );
 
-  --bg-currentcolor: --alpha(--value(--color-*, [*]) / var(--bg-opacity, 100%));
-  --bg-contrast: oklch(from --value(--color-*, [*]) calc(1 - min(1, max(0, (l - 0.68) * 30))) 0.02 h);
+  --bg-currentcolor: --alpha(
+    --value(--color- *, [ *]) / var(--bg-opacity, 100%)
+  );
+  --bg-contrast: oklch(
+    from --value(--color- *, [ *]) calc(1 - min(1, max(0, (l - 0.68) * 30)))
+      0.02 h
+  );
   background-color: var(--bg-currentcolor) !important;
 }
 
 @utility bg-opacity-* {
-  --bg-opacity: --value(integer)%;
+  --bg-opacity: --value(integer) %;
 }
 
 @utility duration-* {

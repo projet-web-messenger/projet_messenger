@@ -1,10 +1,19 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "css": {
-    "formatter": { "enabled": false },
-    "linter": { "enabled": false },
-    "assists": { "enabled": false },
-    "parser": { "allowWrongLineComments": false, "cssModules": false }
+    "formatter": {
+      "enabled": false
+    },
+    "linter": {
+      "enabled": false
+    },
+    "assists": {
+      "enabled": false
+    },
+    "parser": {
+      "allowWrongLineComments": false,
+      "cssModules": false
+    }
   },
   "javascript": {
     "parser": {

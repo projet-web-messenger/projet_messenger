@@ -168,7 +168,7 @@ Button.displayName = "Button";
  *
  * -----------------------------------------------------------------------------*/
 export const IconButton: UixComponent<"button", Assign<ButtonProps, { icon: React.ReactElement }>> = (props) => {
-  const { children, className, icon, size: sizeProp, variant: variantProp, ...remainingProps } = props;
+  const { children, className, icon, size: sizeProp = "md", variant: variantProp = "solid", ...remainingProps } = props;
 
   const { size: sizeContext, variant: variantContext } = useButtonContext();
 
