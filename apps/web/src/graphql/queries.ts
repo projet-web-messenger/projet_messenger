@@ -68,3 +68,19 @@ export const GET_CONVERSATIONS = gql`
     }
   }
 `;
+
+// Query pour récupérer une conversation avec ses participants
+export const GET_CONVERSATION_BY_ID = gql`
+  query GetConversationById($conversationId: Int!) {
+    conversationById(conversationId: $conversationId) {
+      id
+      title
+      participants {
+        id
+        name
+        email
+        createdAt
+      }
+    }
+  }
+`;

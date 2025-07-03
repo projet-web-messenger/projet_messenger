@@ -38,7 +38,7 @@ export default async function MessageArea({ params }: MessageAreaProps) {
         <div className="flex-1 overflow-hidden p-3">
           <h3 className="mb-2 font-semibold text-gray-900 text-sm dark:text-white">👥 Membres</h3>
           <div className="max-h-full overflow-y-auto">
-            <MembersList />
+            <MembersList conversationId={conversationId} />
           </div>
         </div>
       </div>
