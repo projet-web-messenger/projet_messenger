@@ -5,7 +5,7 @@ import { LuHeadphones, LuMic, LuSettings } from "react-icons/lu";
 
 export function UserPanel() {
   return (
-    <div className="border-gray-400 border-t bg-gray-300 p-3 dark:border-gray-600 dark:bg-gray-750">
+    <div className="border-gray-400 border-t bg-gray-300 p-2 dark:border-gray-600 dark:bg-gray-750">
       <div className="flex items-center gap-2">
         <Avatar src="/user-me.png" fallback="ME" size="sm" />
         <div className="min-w-0 flex-1">

@@ -9,7 +9,7 @@ import { Avatar } from "../ui/avatar";
 
 export function ChannelList() {
   return (
-    <aside className="relative flex w-72 flex-col border">
+    <aside className="relative flex w-52 flex-col border">
       <header className="flex h-12 items-center border-b p-2">
         <Button className="line-clamp-1 w-full text-ellipsis rounded-lg" variant="ghost" size="sm">
           Find or start a conversation

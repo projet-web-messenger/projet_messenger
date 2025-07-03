@@ -65,7 +65,7 @@ export function MessageInput({ conversationId, user1Id, user2Id, currentUserId }
         >
           <Input
             as="textarea"
-            placeholder="Message @John Doe"
+            placeholder="Message "
             variant="subtle"
             className="h-[3.25rem] resize-none py-4"
             size="md"

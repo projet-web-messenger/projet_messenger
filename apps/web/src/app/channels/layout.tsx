@@ -9,8 +9,8 @@ type ChannelLayoutProps = {
 export default function ChannelLayout({ children }: ChannelLayoutProps) {
   return (
     <div className="flex h-dvh">
-      <ChannelList />
-      <main className="flex-1">{children}</main>
+      <ChannelList /> {/* ← Cette liste prend de l'espace à gauche */}
+      <main className="flex-1">{children}</main> {/* ← Votre page est ici */}
     </div>
   );
 }

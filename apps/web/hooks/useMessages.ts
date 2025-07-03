@@ -1,23 +1,8 @@
 "use client";
 
-import { useMutation, useQuery } from "@apollo/client";
+import { MESSAGE_RECEIVED } from "@/graphql/subscriptions";
+import { useMutation, useQuery, useSubscription } from "@apollo/client";
 import { gql } from "@apollo/client";
-
-// ✅ Types pour TypeScript
-interface User {
-  id: number;
-  name: string;
-  email: string;
-}
-
-interface Message {
-  id: number;
-  content: string;
-  createdAt: string;
-  senderId: number;
-  sender: User;
-  conversationId: number;
-}
 
 // ✅ Query qui existe dans votre backend
 const GET_MESSAGES_BY_CONVERSATION = gql`
@@ -208,6 +193,30 @@ export function useMessages(conversationId?: number, user1Id?: number, user2Id?:
     },
   });
 
+  // ✅  Subscription pour recevoir les nouveaux messages en temps réel
+  const { data: subscriptionData } = useSubscription(MESSAGE_RECEIVED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      if (subscriptionData.data?.messageReceived) {
+        const newMessage = subscriptionData.data.messageReceived;
+        // biome-ignore lint/suspicious/noConsole: <explanation>
+        console.log("🔔 Nouveau message reçu via WebSocket:", newMessage);
+
+        // Si le message appartient à notre conversation, refetch automatiquement
+        if (conversationId && newMessage.conversationId === conversationId) {
+          // biome-ignore lint/suspicious/noConsole: <explanation>
+          console.log("📱 Message pour notre conversation, refetch automatique...");
+          setTimeout(() => {
+            refetchConversation();
+          }, 100);
+        }
+      }
+    },
+    onError: (error) => {
+      // biome-ignore lint/suspicious/noConsole: <explanation>
+      console.error("❌ Erreur subscription:", error);
+    },
+  });
+
   // ✅ Fonction pour envoyer un message
   const sendMessage = async (content: string, senderId: number) => {
     try {
@@ -262,5 +271,6 @@ export function useMessages(conversationId?: number, user1Id?: number, user2Id?:
     sendMessage,
     sendLoading,
     refetch,
+    subscriptionData, //Exposer les données de subscription
   };
 }

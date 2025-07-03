@@ -24,13 +24,13 @@ export default async function AppLayout({
       {/* Sidebar */}
 
       <Tabs defaultValue="private-messages" orientation="vertical" className="flex flex-1">
-        <TabsList className="flex flex-col bg-gray-200 p-4 dark:bg-gray-800">
+        <TabsList className="flex w-16 flex-col bg-gray-200 p-2 dark:bg-gray-800">
           {/* Private Messages */}
           <Tooltip positioning={{ side: "right", align: "center" }}>
             <TooltipTrigger asChild>
               <TabsTrigger value="private-messages" asChild>
                 <Button variant="ghost" asChild>
-                  <LinkBox className="mb-4 flex size-10 items-center justify-center rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg dark:from-purple-600 dark:to-pink-600">
+                  <LinkBox className="mb-3 flex size-8 items-center justify-center rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg dark:from-purple-600 dark:to-pink-600">
                     <LinkOverlay asChild>
                       <Link href="/app/@me" className="font-bold text-md text-white sm:text-2xl">
                         M
@@ -50,7 +50,7 @@ export default async function AppLayout({
           {/* Add New Channel Button */}
           <Tooltip positioning={{ side: "right", align: "center" }}>
             <TooltipTrigger asChild>
-              <IconButton icon={<LuCirclePlus />} variant="plain" className="rounded-lg hover:bg-blue-500" size="md" />
+              <IconButton icon={<LuCirclePlus />} variant="plain" className="rounded-lg hover:bg-blue-500" size="sm" />
             </TooltipTrigger>
             <TooltipContent className="w-auto min-w-0">
               <Card className="g-white border border-gray-200 dark:border-gray-700 dark:bg-gray-800">
@@ -59,7 +59,7 @@ export default async function AppLayout({
             </TooltipContent>
           </Tooltip>
         </TabsList>
-        <TabsContent value="private-messages" className="flex-1 bg-white p-4 dark:bg-gray-900">
+        <TabsContent value="private-messages" className="flex-1 bg-white p-0 dark:bg-gray-900">
           {children}
         </TabsContent>
       </Tabs>

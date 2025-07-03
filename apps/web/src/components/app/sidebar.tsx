@@ -3,7 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function Sidebar({ show, onClose }: { show: boolean; onClose: () => void }) {
+export default function Sidebar({
+  show,
+  onClose,
+}: {
+  show: boolean;
+  onClose: () => void;
+}) {
   const pathname = usePathname();
 
   const navItems = [
@@ -35,7 +41,7 @@ export default function Sidebar({ show, onClose }: { show: boolean; onClose: () 
   const isActive = (href: string) => pathname === href;
 
   const linkClasses = (active: boolean) =>
-    `${active ? "bg-gray-200 dark:bg-white/20 px-3 py-2 rounded-sm" : "hover:bg-gray-100 py-2 px-3 rounded-sm dark:hover:bg-white/10 rounded-sm px-3 py-2"} text-left`;
+    `${active ? "bg-gray-200 dark:bg-white/20 px-3 py-2 rounded-sm" : "hover:bg-gray-100 py-2 px-3 rounded-sm dark:hover:bg-white/10 rounded-sm px-2 py-2"} text-left`;
 
   return (
     <>
@@ -57,7 +63,7 @@ export default function Sidebar({ show, onClose }: { show: boolean; onClose: () 
 
       {/* SIDEBAR */}
       <aside
-        className={`fixed z-40 h-screen w-64 transform border-r bg-white p-4 transition-transform duration-300 md:static dark:border-white/10 dark:bg-white/10 ${
+        className={`fixed z-40 h-screen w-48 transform border-r bg-white p-4 transition-transform duration-300 md:static dark:border-white/10 dark:bg-white/10 ${
           show ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0`}
       >
