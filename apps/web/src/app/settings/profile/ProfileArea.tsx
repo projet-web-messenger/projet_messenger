@@ -72,7 +72,7 @@ export default function ProfileArea({ userInfo }: ProfileAreaProps) {
                   type="text"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  className="w-full rounded-md bg-gray-200 px-3 py-2 text-sm focus:outline-none dark:bg-white/10"
+                  className="w-full rounded-md px-3 py-2 text-sm focus:outline-none "
                 />
               </div>
 
@@ -80,12 +80,6 @@ export default function ProfileArea({ userInfo }: ProfileAreaProps) {
                 <button type="submit" className="rounded-sm bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-700">
                   Valider
                 </button>
-                {/* <button
-                                type="submit"
-                                className="bg-blue-600 text-white hover:bg-blue-700 font-medium px-4 py-2 rounded-sm transition"
-                            >
-                                Valider
-                            </button> */}
               </div>
             </form>
 
@@ -93,9 +87,9 @@ export default function ProfileArea({ userInfo }: ProfileAreaProps) {
             <div>
               <h2 className="mb-2 font-medium text-gray-700 text-sm dark:text-blue-100">Preview</h2>
 
-              <div className="w-full max-w-sm rounded-xl bg-white p-4 shadow-gray-300 shadow-lg dark:bg-white/10">
+              <div className="w-full max-w-sm rounded-xl p-4 shadow-gray-300 shadow-lg">
                 <div className="relative h-20 rounded-t-xl bg-orange-400 dark:bg-orange-500">
-                  <div className="-bottom-6 absolute left-4 flex h-14 w-14 items-center justify-center rounded-full border-4 border-white bg-white dark:border-white/20">
+                  <div className="-bottom-6 absolute left-4 flex h-14 w-14 items-center justify-center rounded-full border-4 border-white dark:border-white/20">
                     <img src="/discord-logo.svg" alt="Avatar" className="h-8 w-8" />
                     <span className="-bottom-1 -right-1 absolute h-4 w-4 rounded-full border-2 border-white bg-green-500" />
                   </div>
