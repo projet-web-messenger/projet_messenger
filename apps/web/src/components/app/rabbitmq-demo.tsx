@@ -12,7 +12,8 @@ interface Message {
   senderId: number;
   sender: {
     id: number;
-    name: string;
+    displayName: string;
+    username: string;
     email: string;
   };
   conversationId: number;
@@ -20,14 +21,15 @@ interface Message {
 
 export default function RabbitmqDemo() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [connectionStatus, setConnectionStatus] = useState<string>("🔌 Connecting...");
+  const [connectionStatus, setConnectionStatus] =
+    useState<string>("🔌 Connecting...");
   const [messageCount, setMessageCount] = useState(0);
 
   // ✅ Subscription pour recevoir TOUS les messages du système
   const { data, loading, error } = useSubscription(MESSAGE_RECEIVED, {
     onSubscriptionData: ({ subscriptionData }) => {
       if (subscriptionData.data?.messageReceived) {
-        const newMessage = subscriptionData.data.messageReceived;
+        const newMessage = subscriptionData.data.messageReceived; //
 
         // biome-ignore lint/suspicious/noConsole: <explanation>
         console.log("🐰 RabbitMQ → GraphQL → Frontend:", newMessage);
@@ -83,7 +85,9 @@ export default function RabbitmqDemo() {
       {/* Header avec statut */}
       <div className="mb-4">
         <div className="mb-2 flex items-center justify-between">
-          <h3 className="font-semibold text-gray-900 text-sm dark:text-white">🐰 Real-time Messages</h3>
+          <h3 className="font-semibold text-gray-900 text-sm dark:text-white">
+            🐰 Real-time Messages
+          </h3>
           <span className="rounded-full bg-gray-200 px-2 py-1 text-gray-600 text-xs dark:bg-gray-700 dark:text-gray-300">
             {messageCount} msg{messageCount !== 1 ? "s" : ""}
           </span>
@@ -97,21 +101,26 @@ export default function RabbitmqDemo() {
                 : connectionStatus.includes("🔴")
                   ? "text-red-600 dark:text-red-400"
                   : "text-yellow-600 dark:text-yellow-400"
-            }`}
-          >
+            }`}>
             {connectionStatus}
           </span>
         </div>
 
-        <p className="mt-1 text-gray-500 text-xs dark:text-gray-400">Via RabbitMQ → WebSocket</p>
+        <p className="mt-1 text-gray-500 text-xs dark:text-gray-400">
+          Via RabbitMQ → WebSocket
+        </p>
       </div>
 
       {/* Messages en temps réel */}
       <div className="mb-4 max-h-48 space-y-2 overflow-y-auto">
         {messages.length === 0 ? (
           <div className="py-4 text-center">
-            <div className="text-gray-400 text-xs dark:text-gray-500">🎯 En attente...</div>
-            <div className="mt-1 text-gray-300 text-xs dark:text-gray-600">Envoyez un message !</div>
+            <div className="text-gray-400 text-xs dark:text-gray-500">
+              🎯 En attente...
+            </div>
+            <div className="mt-1 text-gray-300 text-xs dark:text-gray-600">
+              Envoyez un message !
+            </div>
           </div>
         ) : (
           messages.map((message, index) => (
@@ -121,17 +130,23 @@ export default function RabbitmqDemo() {
               style={{
                 animationDuration: "2s",
                 animationIterationCount: "1",
-              }}
-            >
+              }}>
               <div className="mb-1 flex items-start justify-between">
-                <span className="font-medium text-gray-900 text-xs dark:text-white">{message.sender?.name || `User ${message.senderId}`}</span>
+                <span className="font-medium text-gray-900 text-xs dark:text-white">
+                  {message.sender?.displayName ||
+                    message.sender?.username ||
+                    message.sender?.email ||
+                    `User ${message.sender?.id}`}
+                </span>
                 <div className="flex gap-1 text-gray-400 text-xs dark:text-gray-500">
                   <span>#{message.conversationId}</span>
                   <span>•</span>
                   <span>{formatTime(message.createdAt)}</span>
                 </div>
               </div>
-              <p className="text-gray-700 text-xs leading-relaxed dark:text-gray-300">{message.content}</p>
+              <p className="text-gray-700 text-xs leading-relaxed dark:text-gray-300">
+                {message.content}
+              </p>
             </div>
           ))
         )}
@@ -143,8 +158,7 @@ export default function RabbitmqDemo() {
           type="button"
           onClick={clearMessages}
           disabled={messages.length === 0}
-          className="px-2 py-1 text-gray-500 text-xs hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-400 dark:hover:text-gray-200"
-        >
+          className="px-2 py-1 text-gray-500 text-xs hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-400 dark:hover:text-gray-200">
           🗑️ Vider
         </button>
 

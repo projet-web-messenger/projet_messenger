@@ -1,5 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { AuthProvider, type FriendRequest, FriendRequestStatus, type User, UserStatus } from "@prisma/client";
+import {
+  AuthProvider,
+  type FriendRequest,
+  FriendRequestStatus,
+  type User,
+  UserStatus,
+} from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
@@ -17,8 +23,7 @@ export class UserService {
       baseName
         ?.toLowerCase()
         .replace(/[^a-z0-9]/g, "") // Remove special characters
-        .slice(0, 20) || // Limit length
-      "user";
+        .slice(0, 20) || "user"; // Limit length
 
     // If base is too short, add some default
     if (baseUsername.length < 3) {
@@ -43,7 +48,9 @@ export class UserService {
 
       // Add safety check to prevent infinite loops
       if (counter > 10000) {
-        throw new Error("Unable to generate unique username after 10000 attempts");
+        throw new Error(
+          "Unable to generate unique username after 10000 attempts"
+        );
       }
     }
   }
@@ -95,7 +102,10 @@ export class UserService {
       throw new Error("Valid Kinde ID is required to create a user");
     }
 
-    if (!data.provider || !Object.values(AuthProvider).includes(data.provider)) {
+    if (
+      !data.provider ||
+      !Object.values(AuthProvider).includes(data.provider)
+    ) {
       throw new Error("Valid auth provider is required");
     }
 
@@ -122,7 +132,9 @@ export class UserService {
     }
 
     // Generate username if not provided
-    const username = await this.generateUniqueUsername(data.displayName || data.email);
+    const username = await this.generateUniqueUsername(
+      data.displayName || data.email
+    );
 
     const user = await this.prisma.user.create({
       data: {
@@ -140,7 +152,14 @@ export class UserService {
 
   async update(
     id: string,
-    data: { email?: string; username?: string; displayName?: string; avatar?: string; bio?: string; status?: UserStatus },
+    data: {
+      email?: string;
+      username?: string;
+      displayName?: string;
+      avatar?: string;
+      bio?: string;
+      status?: UserStatus;
+    }
   ): Promise<User> {
     if (!id || typeof id !== "string") {
       throw new Error("Valid user ID is required");
@@ -191,7 +210,10 @@ export class UserService {
     }
 
     // Validate displayName if provided
-    if (data.displayName !== undefined && typeof data.displayName !== "string") {
+    if (
+      data.displayName !== undefined &&
+      typeof data.displayName !== "string"
+    ) {
       throw new Error("Display name must be a valid string");
     }
 
@@ -211,7 +233,10 @@ export class UserService {
     }
 
     // Validate status if provided
-    if (data.status !== undefined && !Object.values(UserStatus).includes(data.status)) {
+    if (
+      data.status !== undefined &&
+      !Object.values(UserStatus).includes(data.status)
+    ) {
       throw new Error("Invalid user status");
     }
 
@@ -301,7 +326,10 @@ export class UserService {
   }
 
   // Friend Request Methods remain the same since they use user IDs
-  async sendFriendRequest(senderId: string, receiverId: string): Promise<FriendRequest> {
+  async sendFriendRequest(
+    senderId: string,
+    receiverId: string
+  ): Promise<FriendRequest> {
     // Check if users exist
     const [sender, receiver] = await Promise.all([
       this.prisma.user.findUnique({ where: { id: senderId } }),
@@ -352,7 +380,11 @@ export class UserService {
     return friendRequest;
   }
 
-  async respondToFriendRequest(requestId: string, userId: string, status: FriendRequestStatus): Promise<FriendRequest> {
+  async respondToFriendRequest(
+    requestId: string,
+    userId: string,
+    status: FriendRequestStatus
+  ): Promise<FriendRequest> {
     // Check if status is valid
     if (!Object.values(FriendRequestStatus).includes(status)) {
       throw new Error("Invalid friend request status");
@@ -442,12 +474,19 @@ export class UserService {
       },
     });
 
-    return friendships.map((friendship) => (friendship.userId === userId ? friendship.friend : friendship.user));
+    return friendships.map((friendship) =>
+      friendship.userId === userId ? friendship.friend : friendship.user
+    );
   }
 
   async removeFriend(userId: string, friendId: string): Promise<boolean> {
     // Validate both user IDs
-    if (!userId || !friendId || typeof userId !== "string" || typeof friendId !== "string") {
+    if (
+      !userId ||
+      !friendId ||
+      typeof userId !== "string" ||
+      typeof friendId !== "string"
+    ) {
       throw new Error("Valid userId and friendId are required");
     }
 
@@ -457,8 +496,14 @@ export class UserService {
 
     // Check if both users exist
     const [user, friend] = await Promise.all([
-      this.prisma.user.findUnique({ where: { id: userId }, select: { id: true } }),
-      this.prisma.user.findUnique({ where: { id: friendId }, select: { id: true } }),
+      this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true },
+      }),
+      this.prisma.user.findUnique({
+        where: { id: friendId },
+        select: { id: true },
+      }),
     ]);
 
     if (!user) {

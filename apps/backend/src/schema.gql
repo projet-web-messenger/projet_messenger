@@ -101,6 +101,10 @@ type Query {
   userConversations(userId: String!): [UserConversation!]!
 }
 
+type Subscription {
+  messageReceived: Message!
+}
+
 type User {
   avatar: String
   bio: String

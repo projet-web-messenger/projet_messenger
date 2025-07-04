@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { RabbitMQService } from "../rabbitmq/rabbitmq.service";
-import type { ConversationPayload, FriendRequestPayload, MessageSentPayload, UserStatusPayload, UserTypingPayload } from "../rabbitmq/rabbitmq.service";
+import { RabbitmqService } from "../rabbitmq/rabbitmq.service";
+// import type { ConversationPayload, FriendRequestPayload, MessageSentPayload, UserStatusPayload, UserTypingPayload } from "../rabbitmq/rabbitmq.service";
 
 export interface ConnectedUser {
   userId: string;
@@ -25,7 +25,7 @@ export class WebSocketService {
   private socketUsers: Map<string, string> = new Map(); // socketId -> userId
   private typingStatus: Map<string, Map<string, TypingStatus>> = new Map(); // conversationId -> Map<userId, TypingStatus>
 
-  constructor(private rabbitMQService: RabbitMQService) {}
+  constructor(private rabbitMQService: RabbitmqService) {}
 
   // User connection management
   addConnectedUser(userId: string, socketId: string): void {
@@ -90,12 +90,16 @@ export class WebSocketService {
   joinConversation(userId: string, conversationId: string): boolean {
     const user = this.connectedUsers.get(userId);
     if (!user) {
-      this.logger.warn(`❌ Cannot join conversation: User ${userId} not connected`);
+      this.logger.warn(
+        `❌ Cannot join conversation: User ${userId} not connected`
+      );
       return false;
     }
 
     user.conversations.add(conversationId);
-    this.logger.debug(`💬 User ${userId} joined conversation ${conversationId}`);
+    this.logger.debug(
+      `💬 User ${userId} joined conversation ${conversationId}`
+    );
     return true;
   }
 
@@ -134,7 +138,9 @@ export class WebSocketService {
 
     const conversationTyping = this.typingStatus.get(conversationId);
     if (!conversationTyping) {
-      throw new Error(`Failed to get conversation typing status for ${conversationId}`);
+      throw new Error(
+        `Failed to get conversation typing status for ${conversationId}`
+      );
     }
 
     const status: TypingStatus = {
@@ -164,7 +170,9 @@ export class WebSocketService {
     }
 
     if (removed) {
-      this.logger.debug(`⌨️  User ${userId} stopped typing in ${conversationId}`);
+      this.logger.debug(
+        `⌨️  User ${userId} stopped typing in ${conversationId}`
+      );
     }
 
     return removed;
@@ -181,7 +189,10 @@ export class WebSocketService {
 
   cleanupUserTyping(userId: string): void {
     // Remove user from all typing indicators
-    for (const [conversationId, conversationTyping] of this.typingStatus.entries()) {
+    for (const [
+      conversationId,
+      conversationTyping,
+    ] of this.typingStatus.entries()) {
       conversationTyping.delete(userId);
 
       // Clean up empty maps
@@ -191,58 +202,61 @@ export class WebSocketService {
     }
   }
 
-  // Message broadcasting helpers
-  async broadcastMessage(payload: MessageSentPayload): Promise<void> {
-    try {
-      await this.rabbitMQService.publishMessageSent(payload);
-      this.logger.debug(`📨 Message broadcast queued for conversation ${payload.conversationId}`);
-    } catch (error) {
-      this.logger.error(`❌ Failed to broadcast message: ${error.message}`);
-    }
-  }
+  // // Message broadcasting helpers
+  // async broadcastMessage(payload: MessageSentPayload): Promise<void> {
+  //   try {
+  //     await this.rabbitMQService.publishMessageSent(payload);
+  //     this.logger.debug(`📨 Message broadcast queued for conversation ${payload.conversationId}`);
+  //   } catch (error) {
+  //     this.logger.error(`❌ Failed to broadcast message: ${error.message}`);
+  //   }
+  // }
 
-  async broadcastUserStatus(payload: UserStatusPayload): Promise<void> {
-    try {
-      await this.rabbitMQService.publishUserStatusChange(payload);
-      this.logger.debug(`👤 User status broadcast queued for user ${payload.userId}`);
-    } catch (error) {
-      this.logger.error(`❌ Failed to broadcast user status: ${error.message}`);
-    }
-  }
+  // async broadcastUserStatus(payload: UserStatusPayload): Promise<void> {
+  //   try {
+  //     await this.rabbitMQService.publishUserStatusChange(payload);
+  //     this.logger.debug(`👤 User status broadcast queued for user ${payload.userId}`);
+  //   } catch (error) {
+  //     this.logger.error(`❌ Failed to broadcast user status: ${error.message}`);
+  //   }
+  // }
 
-  async broadcastTypingStatus(payload: UserTypingPayload): Promise<void> {
-    try {
-      await this.rabbitMQService.publishUserTyping(payload);
-      this.logger.debug(`⌨️  Typing status broadcast queued for conversation ${payload.conversationId}`);
-    } catch (error) {
-      this.logger.error(`❌ Failed to broadcast typing status: ${error.message}`);
-    }
-  }
+  // async broadcastTypingStatus(payload: UserTypingPayload): Promise<void> {
+  //   try {
+  //     await this.rabbitMQService.publishUserTyping(payload);
+  //     this.logger.debug(`⌨️  Typing status broadcast queued for conversation ${payload.conversationId}`);
+  //   } catch (error) {
+  //     this.logger.error(`❌ Failed to broadcast typing status: ${error.message}`);
+  //   }
+  // }
 
-  async broadcastFriendRequest(payload: FriendRequestPayload): Promise<void> {
-    try {
-      await this.rabbitMQService.publishFriendRequestSent(payload);
-      this.logger.debug(`👥 Friend request broadcast queued for user ${payload.receiverId}`);
-    } catch (error) {
-      this.logger.error(`❌ Failed to broadcast friend request: ${error.message}`);
-    }
-  }
+  // async broadcastFriendRequest(payload: FriendRequestPayload): Promise<void> {
+  //   try {
+  //     await this.rabbitMQService.publishFriendRequestSent(payload);
+  //     this.logger.debug(`👥 Friend request broadcast queued for user ${payload.receiverId}`);
+  //   } catch (error) {
+  //     this.logger.error(`❌ Failed to broadcast friend request: ${error.message}`);
+  //   }
+  // }
 
-  async broadcastConversationEvent(payload: ConversationPayload): Promise<void> {
-    try {
-      await this.rabbitMQService.publishConversationCreated(payload);
-      this.logger.debug(`💬 Conversation event broadcast queued for conversation ${payload.conversationId}`);
-    } catch (error) {
-      this.logger.error(`❌ Failed to broadcast conversation event: ${error.message}`);
-    }
-  }
+  // async broadcastConversationEvent(payload: ConversationPayload): Promise<void> {
+  //   try {
+  //     await this.rabbitMQService.publishConversationCreated(payload);
+  //     this.logger.debug(`💬 Conversation event broadcast queued for conversation ${payload.conversationId}`);
+  //   } catch (error) {
+  //     this.logger.error(`❌ Failed to broadcast conversation event: ${error.message}`);
+  //   }
+  // }
 
   // Analytics and monitoring
   getConnectionStats() {
     return {
       totalConnections: this.connectedUsers.size,
       activeConversations: this.typingStatus.size,
-      totalTypingIndicators: Array.from(this.typingStatus.values()).reduce((total, map) => total + map.size, 0),
+      totalTypingIndicators: Array.from(this.typingStatus.values()).reduce(
+        (total, map) => total + map.size,
+        0
+      ),
       timestamp: new Date(),
     };
   }
@@ -254,7 +268,9 @@ export class WebSocketService {
   getRecentActivity(minutes = 5): ConnectedUser[] {
     const cutoff = new Date(Date.now() - minutes * 60 * 1000);
 
-    return Array.from(this.connectedUsers.values()).filter((user) => user.lastSeen >= cutoff);
+    return Array.from(this.connectedUsers.values()).filter(
+      (user) => user.lastSeen >= cutoff
+    );
   }
 
   // Cleanup and maintenance
@@ -279,7 +295,9 @@ export class WebSocketService {
   // Utility methods
   broadcastToConversation(conversationId: string, event: string): string[] {
     const users = this.getUsersInConversation(conversationId);
-    this.logger.debug(`📢 Broadcasting ${event} to ${users.length} users in conversation ${conversationId}`);
+    this.logger.debug(
+      `📢 Broadcasting ${event} to ${users.length} users in conversation ${conversationId}`
+    );
     return users;
   }
 

@@ -68,7 +68,9 @@ export function MembersList({ conversationId }: MembersListProps) {
     return (
       <div className="space-y-2">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="flex animate-pulse items-center gap-2 p-2">
+          <div
+            key={i}
+            className="flex animate-pulse items-center gap-2 p-2">
             <div className="h-8 w-8 rounded-full bg-gray-300 dark:bg-gray-600" />
             <div className="flex-1">
               <div className="mb-1 h-4 w-3/4 rounded bg-gray-300 dark:bg-gray-600" />
@@ -83,7 +85,9 @@ export function MembersList({ conversationId }: MembersListProps) {
   if (error) {
     return (
       <div className="p-4 text-center">
-        <div className="text-red-500 text-sm dark:text-red-400">Erreur lors du chargement des membres</div>
+        <div className="text-red-500 text-sm dark:text-red-400">
+          Erreur lors du chargement des membres
+        </div>
         <div className="mt-1 text-gray-400 text-xs">{error.message}</div>
       </div>
     );
@@ -92,7 +96,9 @@ export function MembersList({ conversationId }: MembersListProps) {
   if (participants.length === 0) {
     return (
       <div className="p-4 text-center">
-        <div className="text-gray-500 text-sm dark:text-gray-400">Aucun membre dans cette conversation</div>
+        <div className="text-gray-500 text-sm dark:text-gray-400">
+          Aucun membre dans cette conversation
+        </div>
       </div>
     );
   }
@@ -101,8 +107,12 @@ export function MembersList({ conversationId }: MembersListProps) {
     <>
       {/* Header avec nombre de membres */}
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-semibold text-gray-900 text-sm dark:text-white">👥 Membres</h3>
-        <span className="rounded-full bg-gray-100 px-2 py-1 text-gray-600 text-xs dark:bg-gray-700 dark:text-gray-300">{participants.length}</span>
+        <h3 className="font-semibold text-gray-900 text-sm dark:text-white">
+          👥 Membres
+        </h3>
+        <span className="rounded-full bg-gray-100 px-2 py-1 text-gray-600 text-xs dark:bg-gray-700 dark:text-gray-300">
+          {participants.length}
+        </span>
       </div>
 
       <div className="space-y-1.5">
@@ -112,18 +122,28 @@ export function MembersList({ conversationId }: MembersListProps) {
           const avatar = getAvatar(Number(member.id));
 
           return (
-            <div key={member.id} className="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800">
+            <div
+              key={member.id}
+              className="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800">
               <div className="relative">
                 <span className="text-sm">{avatar}</span>
                 <div
                   className={`-bottom-0.5 -right-0.5 absolute h-2.5 w-2.5 rounded-full border border-white dark:border-gray-900 ${
-                    status === "online" ? "bg-green-500" : status === "away" ? "bg-yellow-500" : "bg-gray-400"
+                    status === "online"
+                      ? "bg-green-500"
+                      : status === "away"
+                        ? "bg-yellow-500"
+                        : "bg-gray-400"
                   }`}
                 />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate font-medium text-gray-900 text-sm dark:text-white">{member.name}</p>
-                <p className="text-gray-500 text-xs capitalize dark:text-gray-400">{status}</p>
+                <p className="truncate font-medium text-gray-900 text-sm dark:text-white">
+                  {member.name}
+                </p>
+                <p className="text-gray-500 text-xs capitalize dark:text-gray-400">
+                  {status}
+                </p>
               </div>
             </div>
           );

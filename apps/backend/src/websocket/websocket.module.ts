@@ -1,11 +1,11 @@
 import { Module } from "@nestjs/common";
-import { RabbitMQModule } from "../rabbitmq/rabbitmq.module";
+import { RabbitmqModule } from "../rabbitmq/rabbitmq.module";
 import { WebSocketGateway } from "./websocket.gateway"; // Note: Updated class name
 import { WebSocketService } from "./websocket.service";
 
 @Module({
   imports: [
-    RabbitMQModule, // Import RabbitMQ services
+    RabbitmqModule, // Import RabbitMQ services
     // Remove EventEmitterModule.forRoot() - it's configured globally
   ],
   providers: [

@@ -16,12 +16,20 @@ const quicksand = localFont({
   display: "swap",
 });
 
-export default function RootLayout({ children }: Readonly<React.PropsWithChildren>) {
+export default function RootLayout({
+  children,
+}: Readonly<React.PropsWithChildren>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning>
       <body className={`${quicksand.variable} antialiased`}>
         <ReactScan />
-        <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <ThemeProvider
+          attribute="data-theme"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange>
           <ApolloWrapper>{children}</ApolloWrapper>
         </ThemeProvider>
       </body>

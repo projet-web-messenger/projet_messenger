@@ -9,7 +9,8 @@ export const MESSAGE_RECEIVED = gql`
       createdAt
       sender {
         id
-        name
+        displayName
+        username
         email
       }
       conversationId

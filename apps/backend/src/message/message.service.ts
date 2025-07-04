@@ -1,13 +1,16 @@
 import { PrismaService } from "@/prisma/prisma.service";
-import { MessageSentPayload, RabbitMQService } from "@/rabbitmq/rabbitmq.service";
-import { Injectable } from "@nestjs/common";
+import { RabbitmqService } from "@/rabbitmq/rabbitmq.service";
+import { Inject, Injectable } from "@nestjs/common";
 import type { Message } from "@prisma/client";
+import { PubSub } from "graphql-subscriptions";
 
 @Injectable()
 export class MessageService {
   constructor(
     private prisma: PrismaService,
-    private rabbitMQService: RabbitMQService,
+    private rabbitMQService: RabbitmqService,
+
+    @Inject("PUB_SUB") private pubSub: PubSub
   ) {}
 
   async findById(id: string): Promise<Message | null> {
@@ -26,7 +29,11 @@ export class MessageService {
     return message;
   }
 
-  async findByConversationId(conversationId: string, limit?: number, offset?: number): Promise<Message[]> {
+  async findByConversationId(
+    conversationId: string,
+    limit?: number,
+    offset?: number
+  ): Promise<Message[]> {
     // Validate conversationId
     if (!conversationId || typeof conversationId !== "string") {
       throw new Error("Valid conversationId is required");
@@ -62,7 +69,11 @@ export class MessageService {
     });
   }
 
-  async sendMessage(data: { senderId: string; conversationId: string; content: string }): Promise<Message> {
+  async sendMessage(data: {
+    senderId: string;
+    conversationId: string;
+    content: string;
+  }): Promise<Message> {
     const { senderId, conversationId, content } = data;
 
     // Verify conversation exists
@@ -108,23 +119,32 @@ export class MessageService {
     });
 
     // Publish message to RabbitMQ
-    const recipients = conversation.users.map((u) => u.userId).filter((id) => id !== senderId); // Don't send to sender
+    // const recipients = conversation.users
+    //   .map((u) => u.userId)
+    //   .filter((id) => id !== senderId); // Don't send to sender
 
-    const messagePayload: MessageSentPayload = {
-      messageId: message.id,
-      senderId: message.senderId,
-      conversationId: message.conversationId,
-      content: message.content,
-      timestamp: message.createdAt,
-      messageType: "text",
-      recipients, // Targeted delivery
-    };
+    // const messagePayload: MessageSentPayload = {
+    //   messageId: message.id,
+    //   senderId: message.senderId,
+    //   conversationId: message.conversationId,
+    //   content: message.content,
+    //   timestamp: message.createdAt,
+    //   messageType: "text",
+    //   recipients, // Targeted delivery
+    // };
 
-    await this.rabbitMQService.publishMessageSent(messagePayload);
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    await (this.pubSub as any).publish("messageReceived", {
+      messageReceived: message,
+    });
     return message;
   }
 
-  async sendDirectMessage(data: { senderId: string; receiverId: string; content: string }): Promise<Message> {
+  async sendDirectMessage(data: {
+    senderId: string;
+    receiverId: string;
+    content: string;
+  }): Promise<Message> {
     const { senderId, receiverId, content } = data;
 
     // Verify both users exist
@@ -169,7 +189,11 @@ export class MessageService {
     });
   }
 
-  async editMessage(messageId: string, userId: string, newContent: string): Promise<Message> {
+  async editMessage(
+    messageId: string,
+    userId: string,
+    newContent: string
+  ): Promise<Message> {
     // Verify the user owns the message
     const message = await this.prisma.message.findUnique({
       where: { id: messageId },
@@ -224,7 +248,10 @@ export class MessageService {
       },
     });
   }
-  async getMessagesBetweenUsers(user1Id: string, user2Id: string): Promise<Message[]> {
+  async getMessagesBetweenUsers(
+    user1Id: string,
+    user2Id: string
+  ): Promise<Message[]> {
     // Validate user IDs
     if (!user1Id || typeof user1Id !== "string") {
       throw new Error("Valid user1Id is required");

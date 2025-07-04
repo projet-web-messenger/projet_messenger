@@ -10,7 +10,7 @@ import {
   WebSocketServer,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
-import { QueueSubscriberService } from "../rabbitmq/queue-subscriber.service";
+// import { QueueSubscriberService } from "../rabbitmq/queue-subscriber.service";
 
 interface UserSocket extends Socket {
   userId?: string;
@@ -23,7 +23,9 @@ interface UserSocket extends Socket {
   },
   namespace: "/messenger",
 })
-export class WebSocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class WebSocketGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   server: Server;
 
@@ -31,7 +33,7 @@ export class WebSocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   private userSockets: Map<string, UserSocket> = new Map();
   private typingUsers: Map<string, Set<string>> = new Map(); // conversationId -> Set<userId>
 
-  constructor(private queueSubscriber: QueueSubscriberService) {}
+  // constructor(private queueSubscriber: QueueSubscriberService) {}
 
   async handleConnection(client: UserSocket) {
     const userId = client.handshake.query.userId as string;
@@ -50,7 +52,7 @@ export class WebSocketGateway implements OnGatewayConnection, OnGatewayDisconnec
 
     // Subscribe user to their personal queues
     try {
-      await this.queueSubscriber.subscribeUserToQueues(userId);
+      // await this.queueSubscriber.subscribeUserToQueues(userId);
       this.logger.log(`✅ User ${userId} connected and subscribed to queues`);
 
       // Notify user they're connected
@@ -62,7 +64,9 @@ export class WebSocketGateway implements OnGatewayConnection, OnGatewayDisconnec
       // Update user status to online
       client.broadcast.emit("user:online", { userId, timestamp: new Date() });
     } catch (error) {
-      this.logger.error(`❌ Failed to subscribe user ${userId}: ${error.message}`);
+      this.logger.error(
+        `❌ Failed to subscribe user ${userId}: ${error.message}`
+      );
       client.disconnect();
     }
   }
@@ -79,7 +83,7 @@ export class WebSocketGateway implements OnGatewayConnection, OnGatewayDisconnec
       this.cleanupUserTyping(userId);
 
       // Unsubscribe from queues
-      await this.queueSubscriber.unsubscribeUser(userId);
+      // await this.queueSubscriber.unsubscribeUser(userId);
 
       // Remove from active connections
       this.userSockets.delete(userId);
@@ -92,13 +96,18 @@ export class WebSocketGateway implements OnGatewayConnection, OnGatewayDisconnec
 
       this.logger.log(`👋 User ${userId} disconnected`);
     } catch (error) {
-      this.logger.error(`❌ Error during disconnect for user ${userId}: ${error.message}`);
+      this.logger.error(
+        `❌ Error during disconnect for user ${userId}: ${error.message}`
+      );
     }
   }
 
   // Handle typing indicators
   @SubscribeMessage("typing:start")
-  handleTypingStart(@ConnectedSocket() client: UserSocket, @MessageBody() data: { conversationId: string }) {
+  handleTypingStart(
+    @ConnectedSocket() client: UserSocket,
+    @MessageBody() data: { conversationId: string }
+  ) {
     if (!client.userId) {
       return;
     }
@@ -118,11 +127,16 @@ export class WebSocketGateway implements OnGatewayConnection, OnGatewayDisconnec
       timestamp: new Date(),
     });
 
-    this.logger.debug(`⌨️  User ${client.userId} started typing in ${conversationId}`);
+    this.logger.debug(
+      `⌨️  User ${client.userId} started typing in ${conversationId}`
+    );
   }
 
   @SubscribeMessage("typing:stop")
-  handleTypingStop(@ConnectedSocket() client: UserSocket, @MessageBody() data: { conversationId: string }) {
+  handleTypingStop(
+    @ConnectedSocket() client: UserSocket,
+    @MessageBody() data: { conversationId: string }
+  ) {
     if (!client.userId) {
       return;
     }
@@ -145,12 +159,17 @@ export class WebSocketGateway implements OnGatewayConnection, OnGatewayDisconnec
       timestamp: new Date(),
     });
 
-    this.logger.debug(`⌨️  User ${client.userId} stopped typing in ${conversationId}`);
+    this.logger.debug(
+      `⌨️  User ${client.userId} stopped typing in ${conversationId}`
+    );
   }
 
   // Join conversation room
   @SubscribeMessage("conversation:join")
-  async handleJoinConversation(@ConnectedSocket() client: UserSocket, @MessageBody() data: { conversationId: string }) {
+  async handleJoinConversation(
+    @ConnectedSocket() client: UserSocket,
+    @MessageBody() data: { conversationId: string }
+  ) {
     if (!client.userId) {
       return;
     }
@@ -161,10 +180,15 @@ export class WebSocketGateway implements OnGatewayConnection, OnGatewayDisconnec
       // Join Socket.IO room
       await client.join(`conversation:${conversationId}`);
 
-      // Subscribe to conversation queue
-      await this.queueSubscriber.subscribeToConversationQueue(client.userId, conversationId);
+      // // Subscribe to conversation queue
+      // await this.queueSubscriber.subscribeToConversationQueue(
+      //   client.userId,
+      //   conversationId
+      // );
 
-      this.logger.log(`💬 User ${client.userId} joined conversation ${conversationId}`);
+      this.logger.log(
+        `💬 User ${client.userId} joined conversation ${conversationId}`
+      );
 
       client.emit("conversation:joined", { conversationId });
     } catch (error) {
@@ -175,7 +199,10 @@ export class WebSocketGateway implements OnGatewayConnection, OnGatewayDisconnec
 
   // Leave conversation room
   @SubscribeMessage("conversation:leave")
-  async handleLeaveConversation(@ConnectedSocket() client: UserSocket, @MessageBody() data: { conversationId: string }) {
+  async handleLeaveConversation(
+    @ConnectedSocket() client: UserSocket,
+    @MessageBody() data: { conversationId: string }
+  ) {
     if (!client.userId) {
       return;
     }
@@ -192,7 +219,9 @@ export class WebSocketGateway implements OnGatewayConnection, OnGatewayDisconnec
         typingSet.delete(client.userId);
       }
 
-      this.logger.log(`💬 User ${client.userId} left conversation ${conversationId}`);
+      this.logger.log(
+        `💬 User ${client.userId} left conversation ${conversationId}`
+      );
 
       client.emit("conversation:left", { conversationId });
     } catch (error) {
@@ -219,9 +248,13 @@ export class WebSocketGateway implements OnGatewayConnection, OnGatewayDisconnec
         receivedAt: new Date(),
       });
 
-      this.logger.debug(`📨 Forwarded message to user ${payload.userId}: ${eventType}`);
+      this.logger.debug(
+        `📨 Forwarded message to user ${payload.userId}: ${eventType}`
+      );
     } else {
-      this.logger.debug(`📤 User ${payload.userId} not connected, message queued`);
+      this.logger.debug(
+        `📤 User ${payload.userId} not connected, message queued`
+      );
     }
   }
 
