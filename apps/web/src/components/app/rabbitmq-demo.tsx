@@ -45,7 +45,6 @@ export default function RabbitmqDemo() {
       }
     },
     onError: (error) => {
-      // biome-ignore lint/suspicious/noConsole: <explanation>
       console.error("❌ Erreur subscription RabbitMQ:", error);
       setConnectionStatus("🔴 Connection Error");
     },
