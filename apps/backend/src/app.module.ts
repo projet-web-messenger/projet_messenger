@@ -5,14 +5,13 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { ConversationModule } from "./conversation/conversation.module";
 import { MessageModule } from "./message/message.module";
 import { PrismaModule } from "./prisma/prisma.module";
-import { RabbitMQModule } from "./rabbitmq/rabbitmq.module";
+import { RabbitMqModule } from "./rabbitmq/rabbitmq.module";
 import { UserModule } from "./user/user.module";
-import { WebSocketModule } from "./websocket/websocket.module";
 
 @Module({
   imports: [
     PrismaModule,
-    RabbitMQModule,
+    RabbitMqModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), "src/schema.gql"),
@@ -24,8 +23,6 @@ import { WebSocketModule } from "./websocket/websocket.module";
     UserModule,
     ConversationModule,
     MessageModule,
-    RabbitMQModule,
-    WebSocketModule,
   ],
 })
 export class AppModule {}

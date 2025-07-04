@@ -56,17 +56,32 @@ export async function getUser(): Promise<User["id"] | null> {
     const identityInfo = await getUserIdentities(user.id);
 
     if (identityInfo?.type === "email" && "email" in identityInfo && typeof identityInfo.email === "string") {
-      const { data } = await getClient().query<UserByEmailQuery, UserByEmailQueryVariables>({
+      const {
+        data: { userByEmail },
+      } = await getClient().query<UserByEmailQuery, UserByEmailQueryVariables>({
         query: GET_USER_BY_EMAIL,
         variables: {
           email: identityInfo.email,
         },
       });
 
-      if (data?.userByEmail) {
-        return data.userByEmail.id;
+      if (userByEmail) {
+        return userByEmail.id;
       }
     }
+
+    const {
+      data: { user: userById },
+    } = await getClient().query<GetUserQuery, GetUserQueryVariables>({
+      query: GET_USER_BY_ID,
+      variables: { id: user.id },
+    });
+
+    if (userById) {
+      return userById.id;
+    }
+
+    console.log("Creating new user in database...");
 
     const displayName = `${user.given_name || ""} ${user.family_name || ""}`.trim();
 

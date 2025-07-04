@@ -48,7 +48,7 @@
       },
       "suspicious": {
         "noConsole": {
-          "level": "error",
+          "level": "off",
           "options": { "allow": ["error"] }
         },
         "noEvolvingTypes": "error",

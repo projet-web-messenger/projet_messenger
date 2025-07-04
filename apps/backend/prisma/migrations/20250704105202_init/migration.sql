@@ -13,7 +13,6 @@ CREATE TYPE "AuthProvider" AS ENUM ('EMAIL', 'GOOGLE', 'APPLE', 'GITHUB');
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
-    "kindeId" TEXT NOT NULL,
     "email" TEXT,
     "username" TEXT,
     "displayName" TEXT,
@@ -95,7 +94,7 @@ CREATE TABLE "friend_requests" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_kindeId_key" ON "users"("kindeId");
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
