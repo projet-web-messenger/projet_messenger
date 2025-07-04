@@ -1,84 +1,105 @@
-# Turborepo starter
 
-This Turborepo starter is maintained by the Turborepo core team.
+# 📬 Projet Messenger – Branch `feature/graphql-v3`
 
-## Using this example
+## 📥 Clonage du projet
 
-Run the following command:
-
-```sh
-npx create-turbo@latest
+```bash
+git clone https://github.com/projet-web-messenger/projet_messenger.git
 ```
 
-## What's inside?
+## 🛠️ Préparation
 
-This Turborepo includes the following packages/apps:
+- Se placer dans le dossier du projet :
+  ```bash
+  cd projet_messenger
+  ```
 
-### Apps and Packages
+- Se positionner sur la branche `feature/graphql-v3` :
+  ```bash
+  git checkout feature/graphql-v3
+  ```
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- Créer et configurer deux fichiers `.env` :
+  - Un fichier `.env` dans `apps/backend`
+  - Un fichier `.env` dans `apps/web`
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+> ⚠️ Assurez-vous que chaque fichier `.env` contient toutes les variables d’environnement nécessaires.
 
-### Utilities
+- Installer les dépendances :
+  ```bash
+  pnpm install
+  ```
 
-This Turborepo has some additional tools already setup for you:
+---
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+## 🚀 Lancement de l'application
 
-### Build
+### 1. Lancer Docker Desktop
 
-To build all apps and packages, run the following command:
+- Ouvrir l’application **Docker Desktop** et s'assurer qu’elle est bien **en marche** et **connectée**.
 
+### 2. Lancer les services back-end
+
+- Se rendre dans le dossier `apps/backend` :
+  ```bash
+  cd apps/backend
+  ```
+
+- Démarrer les conteneurs :
+  ```bash
+  docker-compose up
+  ```
+
+### 3. Initialiser la base de données Prisma
+
+- Ouvrir un **nouveau terminal**, puis :
+  ```bash
+  cd apps/backend
+  npx prisma generate
+  npx prisma migrate dev --name init
+  ```
+
+### 4. Lancer l’application complète
+
+- Revenir à la racine du projet :
+  ```bash
+  cd ../..
+  pnpm dev
+  ```
+
+---
+
+## ✅ Résumé des commandes
+
+```bash
+git clone https://github.com/projet-web-messenger/projet_messenger.git
+cd projet_messenger
+git checkout feature/graphql-v3
+pnpm install
 ```
-cd my-turborepo
-pnpm build
+
+```bash
+# Terminal 1
+cd apps/backend
+docker-compose up
 ```
 
-### Develop
-
-To develop all apps and packages, run the following command:
-
+```bash
+# Terminal 2
+cd apps/backend
+npx prisma generate
+npx prisma migrate dev --name init
 ```
-cd my-turborepo
+
+```bash
+# Retour à la racine du projet
+cd ../..
 pnpm dev
 ```
 
-### Remote Caching
+---
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+## 🐳 Remarques
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+- L’application **Docker Desktop** doit être **lancée et connectée** avant d'exécuter `docker-compose up`.
+- La base de données sera automatiquement gérée par Docker à l'aide du fichier `docker-compose.yml` dans `apps/backend`.
