@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Link } from "../ui/link";
 
 export default function Sidebar({ show, onClose }: { show: boolean; onClose: () => void }) {
   const pathname = usePathname();
@@ -24,18 +24,14 @@ export default function Sidebar({ show, onClose }: { show: boolean; onClose: () 
     },
     {
       title: "Chat",
-      href: "/settings/chat",
-    },
-    {
-      title: "Notifications",
-      href: "/settings/notifications",
+      href: "/channels/me",
     },
   ];
 
   const isActive = (href: string) => pathname === href;
 
   const linkClasses = (active: boolean) =>
-    `${active ? "bg-gray-200 dark:bg-white/20 px-3 py-2 rounded-sm" : "hover:bg-gray-100 py-2 px-3 rounded-sm dark:hover:bg-white/10 rounded-sm px-3 py-2"} text-left`;
+    `${active ? "bg-gray-200 dark:bg-white/20 px-3 py-2 rounded-sm" : "hover:bg-gray-100 py-2 px-3 rounded-sm dark:hover:bg-white/10 rounded-sm px-3 py-2"} text-left hover:no-underline`;
 
   return (
     <>

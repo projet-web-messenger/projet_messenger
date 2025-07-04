@@ -19,6 +19,7 @@ import { Float } from "@repo/ui/layout/float";
 import { Icon } from "@repo/ui/media/icon";
 import { LinkBox, LinkOverlay } from "@repo/ui/navigation/link";
 import { LuSearch } from "react-icons/lu";
+import AddFriendForm from "./AddFriendForm";
 import FriendContentActionButton from "./FriendContentActionButton";
 import RequestFriendContentActionButton from "./RequestFriendContentActionButton";
 
@@ -40,6 +41,8 @@ export default async function FriendArea() {
 
   const onlineFriends = friends.filter((friend) => friend.status === UserStatus.Online);
   const pendingFriendRequests = friendRequests.filter((friendRequest) => friendRequest.status === FriendRequestStatus.Pending);
+
+  console.log("Friends:", friends);
 
   const defaultValue = onlineFriends.length > 0 ? "online" : "all";
 
@@ -160,6 +163,7 @@ type RequestFriendContentProps = {
   pendingFriendRequests: GetFriendsRequestsQuery["friendRequests"];
 };
 function RequestFriendContent({ pendingFriendRequests }: RequestFriendContentProps) {
+  console.log("Pending Friend Requests:", pendingFriendRequests);
   return (
     <ul>
       {pendingFriendRequests.map((friendRequest) => {
@@ -196,12 +200,7 @@ function AddFriendContent() {
         <CardDescription className="text-gray-500 text-sm">You can add friends with their Discord username.</CardDescription>
       </CardHeader>
       <CardBody>
-        <div className="w- relative isolate flex flex items-center rounded-lg bg-[var(--color-subtle)] px-3 py-1 outline-[var(--color-focus-ring)] focus-within:outline-2 focus-within:outline-solid">
-          <Input placeholder="Enter username" variant="plain" className="h-16 rounded-lg [outline:0]!" size="lg" />
-          <Button as="div" className="rounded-lg" size="md" variant="solid">
-            Send Friend Request
-          </Button>
-        </div>
+        <AddFriendForm />
       </CardBody>
     </Card>
   );

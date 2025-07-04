@@ -54,7 +54,12 @@ export default async function MessageArea(props: MessageAreaProps) {
   return (
     <Card className="flex h-dvh flex-col border-0">
       <CardHeader className="flex h-12 flex-row items-center border-b px-4 py-2">
-        <MessageHeader conversationAvatar={conversationAvatar} conversationDisplayName={conversationDisplayName} conversationName={conversation?.name} />
+        <MessageHeader
+          conversationId={conversationId}
+          conversationAvatar={conversationAvatar}
+          conversationDisplayName={conversationDisplayName}
+          conversationName={conversation?.name}
+        />
       </CardHeader>
       <CardBody className="overflow-y-auto p-2">
         <MessageList

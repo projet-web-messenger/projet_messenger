@@ -17,7 +17,12 @@ export default function FriendContentActionButton({ friendId }: FriendContentAct
   };
 
   const handleRemoveFriend = async () => {
-    removeFriend(friendId);
+    try {
+      await removeFriend(friendId);
+    } catch (error) {
+      console.error("Failed to remove friend:", error);
+      // Optionally, handle the error (e.g., show a notification)
+    }
   };
 
   return (

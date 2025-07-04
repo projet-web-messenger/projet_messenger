@@ -38,6 +38,14 @@ export const GET_USER_BY_EMAIL = graphql(`
   }
 `);
 
+export const GET_USER_BY_USERNAME = graphql(`
+  query UserByUsername($username: String!) {
+    userByUsername(username: $username) {
+      id
+    }
+  }
+`);
+
 export const GET_FRIENDS = graphql(`
   query Friends($userId: String!) {
     friends(userId: $userId) {
@@ -76,6 +84,8 @@ export const GET_CONVERSATION = graphql(`
           id
           status
           displayName
+          username
+          createdAt
         }
       }
     }

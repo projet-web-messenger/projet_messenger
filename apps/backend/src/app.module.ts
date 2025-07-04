@@ -5,13 +5,11 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { ConversationModule } from "./conversation/conversation.module";
 import { MessageModule } from "./message/message.module";
 import { PrismaModule } from "./prisma/prisma.module";
-import { RabbitMqModule } from "./rabbitmq/rabbitmq.module";
 import { UserModule } from "./user/user.module";
 
 @Module({
   imports: [
     PrismaModule,
-    RabbitMqModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), "src/schema.gql"),

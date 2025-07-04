@@ -11,8 +11,13 @@ type RequestFriendContentActionButtonProps = {
 };
 
 export default function RequestFriendContentActionButton({ requestId }: RequestFriendContentActionButtonProps) {
-  const handleAccept = () => {
-    respondToFriendRequest(requestId, FriendRequestStatus.Accepted);
+  const handleAccept = async () => {
+    try {
+      await respondToFriendRequest(requestId, FriendRequestStatus.Accepted);
+    } catch (error) {
+      console.error("Failed to accept friend request:", error);
+      // Optionally, handle the error (e.g., show a notification)
+    }
   };
 
   const handleReject = () => {

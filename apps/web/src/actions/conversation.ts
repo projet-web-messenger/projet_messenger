@@ -31,6 +31,8 @@ export async function createDirectMessage(friendId: string) {
       },
     });
 
+    console.log("createDirectMessage", { data, errors });
+
     if (errors) {
       throw new Error(errors.map((error) => error.message).join(", "));
     }
@@ -51,7 +53,8 @@ export async function createGroupConversation(_prevState: FormState, formData: F
   try {
     const entries = Array.from(formData.entries());
     const selectedFriends: string[] = [];
-    for (let i = 0; i < entries.length; i += 2) {
+    for (let i = 0; i < entries.length; i += 1) {
+      console.log("Processing entry:", entries[i], entries[i + 1]);
       if (i + 1 >= entries.length) {
         break; // Ensure we don't go out of bounds
       }

@@ -1,5 +1,5 @@
 import { PrismaService } from "@/prisma/prisma.service";
-import { MessageSentPayload, RabbitMQService } from "@/rabbitmq/rabbitmq.service";
+import { MessageSentPayload } from "@/rabbitmq/rabbitmq.service";
 import { Injectable } from "@nestjs/common";
 import type { Message } from "@prisma/client";
 
@@ -7,7 +7,7 @@ import type { Message } from "@prisma/client";
 export class MessageService {
   constructor(
     private prisma: PrismaService,
-    private rabbitMQService: RabbitMQService,
+    // private rabbitMQService: RabbitMQService,
   ) {}
 
   async findById(id: string): Promise<Message | null> {
@@ -120,7 +120,6 @@ export class MessageService {
       recipients, // Targeted delivery
     };
 
-    await this.rabbitMQService.publishMessageSent(messagePayload);
     return message;
   }
 

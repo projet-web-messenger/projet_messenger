@@ -60,6 +60,14 @@ export const UPDATE_USER = graphql(`
   }
 `);
 
+export const SEND_FRIEND_REQUEST = graphql(`
+  mutation SendFriendRequest($receiverId: String!, $senderId: String!) {
+    sendFriendRequest(receiverId: $receiverId, senderId: $senderId) {
+      id
+    }
+  }
+`);
+
 export const RESPOND_TO_FRIEND_REQUEST = graphql(`
   mutation RespondToFriendRequest($requestId: String!, $status: String!, $userId: String!) {
     respondToFriendRequest(requestId: $requestId, status: $status, userId: $userId) {

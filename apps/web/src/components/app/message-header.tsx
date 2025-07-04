@@ -3,17 +3,20 @@ import { IconButton } from "@repo/ui/form/button";
 import { Input, InputGroup } from "@repo/ui/form/input";
 import { Float } from "@repo/ui/layout/float";
 import { Icon } from "@repo/ui/media/icon";
+import { Dialog, DialogBackdrop, DialogContent, DialogTrigger } from "@repo/ui/overlay/dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@repo/ui/overlay/tooltip";
 import { LuBell, LuPin, LuSearch, LuUsers } from "react-icons/lu";
 import { Avatar } from "../ui/avatar";
+import FriendProfile from "./friend-profile";
 
 type MessageHeaderProps = {
+  conversationId: string;
   conversationAvatar?: string | null;
   conversationName?: string | null;
   conversationDisplayName?: string | null;
 };
 
-export default async function MessageHeader({ conversationAvatar, conversationName, conversationDisplayName }: MessageHeaderProps) {
+export default async function MessageHeader({ conversationId, conversationAvatar, conversationName, conversationDisplayName }: MessageHeaderProps) {
   return (
     <>
       <div className="flex items-center gap-2">
@@ -51,9 +54,17 @@ export default async function MessageHeader({ conversationAvatar, conversationNa
           </TooltipContent>
         </Tooltip>
         <Tooltip positioning={{ side: "top", align: "center" }}>
-          <TooltipTrigger asChild>
-            <IconButton icon={<LuUsers />} variant="ghost" size="sm" />
-          </TooltipTrigger>
+          <Dialog portalled>
+            <TooltipTrigger asChild>
+              <DialogTrigger asChild>
+                <IconButton icon={<LuUsers />} variant="ghost" size="sm" />
+              </DialogTrigger>
+            </TooltipTrigger>
+            <DialogContent variant="drawer" positioning={{ side: "right" }} className="w-96 max-w-sm">
+              <DialogBackdrop />
+              <FriendProfile conversationId={conversationId} />
+            </DialogContent>
+          </Dialog>
           <TooltipContent className="w-auto min-w-0">
             <Card className="g-white border">
               <p className="px-2 py-1 text-center text-sm">Add friends to DM</p>
