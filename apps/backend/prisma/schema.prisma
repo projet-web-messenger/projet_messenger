@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String       @id // This will be the Kinde ID
+  email       String?      @unique
+  username    String?      @unique
+  displayName String?
+  avatar      String?
+  status      UserStatus   @default(OFFLINE)
+  bio         String?
+  provider    AuthProvider @default(EMAIL)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  lastSeenAt  DateTime?
+
+  // Relations
+  sentMessages           Message[]          @relation("MessageSender")
+  conversations          UserConversation[]
+  sentFriendRequests     FriendRequest[]    @relation("FriendRequestSender")
+  receivedFriendRequests FriendRequest[]    @relation("FriendRequestReceiver")
+  friends                Friendship[]       @relation("UserFriends")
+  friendOf               Friendship[]       @relation("FriendOfUser")
+
+  @@map("users")
+}
+
+// Rest of your models remain the same...
+model Conversation {
+  id            String           @id @default(cuid())
+  name          String?
+  description   String?
+  type          ConversationType @default(DIRECT_MESSAGE)
+  avatar        String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  lastMessageAt DateTime?
+
+  // Relations
+  messages Message[]
+  users    UserConversation[]
+
+  @@map("conversations")
+}
+
+model UserConversation {
+  id             String    @id @default(cuid())
+  userId         String
+  conversationId String
+  joinedAt       DateTime  @default(now())
+  leftAt         DateTime?
+  isMuted        Boolean   @default(false)
+  isPinned       Boolean   @default(false)
+  lastReadAt     DateTime?
+
+  // Relations
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, conversationId])
+  @@map("user_conversations")
+}
+
+model Message {
+  id             String    @id @default(cuid())
+  content        String
+  senderId       String
+  conversationId String
+  isEdited       Boolean   @default(false)
+  editedAt       DateTime?
+  isDeleted      Boolean   @default(false)
+  deletedAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relations
+  sender       User         @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model Friendship {
+  id        String   @id @default(cuid())
+  userId    String
+  friendId  String
+  createdAt DateTime @default(now())
+
+  // Relations
+  user   User @relation("UserFriends", fields: [userId], references: [id], onDelete: Cascade)
+  friend User @relation("FriendOfUser", fields: [friendId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, friendId])
+  @@map("friendships")
+}
+
+model FriendRequest {
+  id         String              @id @default(cuid())
+  senderId   String
+  receiverId String
+  status     FriendRequestStatus @default(PENDING)
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+
+  // Relations
+  sender   User @relation("FriendRequestSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("FriendRequestReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@map("friend_requests")
+}
+
+// Enums
+enum UserStatus {
+  ONLINE
+  IDLE
+  DO_NOT_DISTURB
+  INVISIBLE
+  OFFLINE
+}
+
+enum ConversationType {
+  DIRECT_MESSAGE
+  GROUP_CHAT
+}
+
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  BLOCKED
+}
+
+enum AuthProvider {
+  EMAIL
+  GOOGLE
+  APPLE
+  GITHUB
+}

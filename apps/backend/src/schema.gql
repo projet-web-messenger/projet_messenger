@@ -1,0 +1,137 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+enum AuthProvider {
+  APPLE
+  EMAIL
+  GITHUB
+  GOOGLE
+}
+
+type Conversation {
+  avatar: String
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  lastMessageAt: DateTime
+  messages(limit: Float): [Message!]!
+  name: String
+  type: ConversationType!
+  updatedAt: DateTime!
+  users: [UserConversation!]!
+}
+
+enum ConversationType {
+  DIRECT_MESSAGE
+  GROUP_CHAT
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type FriendRequest {
+  createdAt: DateTime!
+  id: ID!
+  receiver: User!
+  receiverId: ID!
+  sender: User!
+  senderId: ID!
+  status: FriendRequestStatus!
+  updatedAt: DateTime!
+}
+
+enum FriendRequestStatus {
+  ACCEPTED
+  BLOCKED
+  DECLINED
+  PENDING
+}
+
+type Message {
+  content: String!
+  conversation: Conversation!
+  conversationId: ID!
+  createdAt: DateTime!
+  deletedAt: DateTime
+  editedAt: DateTime
+  id: ID!
+  isDeleted: Boolean!
+  isEdited: Boolean!
+  sender: User!
+  senderId: ID!
+  updatedAt: DateTime!
+}
+
+type Mutation {
+  createConversation(description: String, name: String, type: String!, userIds: [String!]!): Conversation!
+  createDirectMessage(userId1: String!, userId2: String!): Conversation!
+  createUser(avatar: String, displayName: String, email: String, id: String!, provider: String! = "EMAIL"): User!
+  deleteMessage(messageId: String!, userId: String!): Message!
+  deleteUser(id: String!): Boolean!
+  editMessage(content: String!, messageId: String!, userId: String!): Message!
+  joinConversation(conversationId: String!, userId: String!): UserConversation!
+  leaveConversation(conversationId: String!, userId: String!): UserConversation!
+  muteConversation(conversationId: String!, isMuted: Boolean!, userId: String!): UserConversation!
+  pinConversation(conversationId: String!, isPinned: Boolean!, userId: String!): UserConversation!
+  removeFriend(friendId: String!, userId: String!): Boolean!
+  respondToFriendRequest(requestId: String!, status: String!, userId: String!): FriendRequest!
+  sendDirectMessage(content: String!, receiverId: String!, senderId: String!): Message!
+  sendFriendRequest(receiverId: String!, senderId: String!): FriendRequest!
+  sendMessage(content: String!, conversationId: String!, senderId: String!): Message!
+  updateUser(avatar: String, bio: String, displayName: String, email: String, id: String!, status: String, username: String): User!
+  updateUserStatus(id: String!, status: String!): User!
+}
+
+type Query {
+  allUsers: [User!]!
+  conversation(id: String!): Conversation
+  friendRequests(userId: String!): [FriendRequest!]!
+  friends(userId: String!): [User!]!
+  getMessagesBetweenUsers(user1Id: String!, user2Id: String!): [Message!]!
+  message(id: String!): Message
+  messagesByConversation(conversationId: String!, limit: Float, offset: Float): [Message!]!
+  searchUsers(query: String!): [User!]!
+  sentFriendRequests(userId: String!): [FriendRequest!]!
+  user(id: String!): User
+  userByEmail(email: String!): User
+  userByUsername(username: String!): User
+  userConversations(userId: String!): [UserConversation!]!
+}
+
+type User {
+  avatar: String
+  bio: String
+  createdAt: DateTime!
+  displayName: String
+  email: String
+  id: ID!
+  lastSeenAt: DateTime
+  provider: AuthProvider!
+  status: UserStatus!
+  updatedAt: DateTime!
+  username: String
+}
+
+type UserConversation {
+  conversation: Conversation!
+  conversationId: ID!
+  id: ID!
+  isMuted: Boolean!
+  isPinned: Boolean!
+  joinedAt: DateTime!
+  lastReadAt: DateTime
+  leftAt: DateTime
+  user: User!
+  userId: ID!
+}
+
+enum UserStatus {
+  DO_NOT_DISTURB
+  IDLE
+  INVISIBLE
+  OFFLINE
+  ONLINE
+}

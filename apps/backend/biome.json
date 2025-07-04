@@ -1,0 +1,13 @@
+{
+  "extends": ["../../biome.json"],
+  "files": {
+    "include": ["src/**/*.ts"]
+  },
+  "linter": {
+    "rules": {
+      "style": {
+        "useImportType": "off"
+      }
+    }
+  }
+}
