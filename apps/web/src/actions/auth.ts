@@ -1,5 +1,6 @@
 "use server";
 
+import { isRedirectError } from "@/utils";
 import { loginSchema } from "@repo/utils/schemas/auth";
 import { redirect } from "next/navigation";
 
@@ -67,11 +68,4 @@ function createErrorState(message: string, type: FormState["type"], email: strin
     fieldErrors: type === "validation" ? { email: message } : undefined,
     fieldValues: { email },
   };
-}
-
-/**
- * Helper function to check if error is a Next.js redirect
- */
-function isRedirectError(error: unknown): boolean {
-  return error instanceof Error && error.message.includes("NEXT_REDIRECT");
 }

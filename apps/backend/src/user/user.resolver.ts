@@ -63,41 +63,17 @@ export class UserResolver {
     return this.userService.getSentFriendRequests(userId);
   }
 
-  // Main mutation for Kinde integration
-  @Mutation(() => User)
-  async createOrUpdateUserFromKinde(
-    @Args("kindeId") kindeId: string,
-    @Args("provider") provider: AuthProvider,
-    @Args("email", { nullable: true }) email?: string,
-    @Args("givenName", { nullable: true }) givenName?: string,
-    @Args("familyName", { nullable: true }) familyName?: string,
-    @Args("picture", { nullable: true }) picture?: string,
-    @Args("username", { nullable: true }) username?: string,
-  ): Promise<User> {
-    return this.userService.createOrUpdateFromKinde(
-      {
-        id: kindeId,
-        email,
-        given_name: givenName,
-        family_name: familyName,
-        picture,
-        username,
-      },
-      provider,
-    );
-  }
-
   // Updated manual user creation for Kinde system
   @Mutation(() => User)
   async createUser(
-    @Args("kindeId") kindeId: string,
+    @Args("id") id: string,
     @Args("provider", { defaultValue: "EMAIL" }) provider: AuthProvider,
     @Args("email", { nullable: true }) email?: string,
     @Args("displayName", { nullable: true }) displayName?: string,
     @Args("avatar", { nullable: true }) avatar?: string,
   ): Promise<User> {
     return this.userService.create({
-      id: kindeId,
+      id: id,
       email,
       displayName,
       avatar,

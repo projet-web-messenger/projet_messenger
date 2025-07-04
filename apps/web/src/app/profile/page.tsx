@@ -17,16 +17,17 @@ export default async function ProfilePage() {
       <Card className="w-full max-w-md">
         <CardBody className="space-y-4">
           <div className="flex items-center gap-4">
-            <Avatar src={userInfo.picture || "/static/assets/default-avatar.png"} alt="User avatar" width={64} height={64} className="rounded-full" />
+            <Avatar src={userInfo.avatar || "/static/assets/default-avatar.png"} alt="User avatar" width={64} height={64} className="rounded-full" />
             <div>
               <h2 className="font-bold text-xl">
-                {userInfo.given_name} {userInfo.family_name}
+                {userInfo.displayName}
+                {userInfo.username && <span className="text-gray-500 text-sm"> @{userInfo.username}</span>}
               </h2>
               <p className="text-sm opacity-60">{userInfo.email}</p>
             </div>
           </div>
           <p className="text-sm">User ID: {userInfo.id}</p>
-          {userInfo.phone_number && <p className="text-sm">Phone: {userInfo.phone_number}</p>}
+          {userInfo.bio && <p className="text-sm">Bio: {userInfo.bio}</p>}
           <Button className="w-full" asChild>
             <LogoutLink>Logout</LogoutLink>
           </Button>

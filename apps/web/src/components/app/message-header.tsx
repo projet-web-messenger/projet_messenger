@@ -7,17 +7,23 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@repo/ui/overlay/toolti
 import { LuBell, LuPin, LuSearch, LuUsers } from "react-icons/lu";
 import { Avatar } from "../ui/avatar";
 
-export function ChannelHeader() {
+type MessageHeaderProps = {
+  conversationAvatar?: string | null;
+  conversationName?: string | null;
+  conversationDisplayName?: string | null;
+};
+
+export default async function MessageHeader({ conversationAvatar, conversationName, conversationDisplayName }: MessageHeaderProps) {
   return (
-    <header className="flex h-12 items-center justify-between border-b px-4 py-2">
+    <>
       <div className="flex items-center gap-2">
         <div className="relative">
-          <Avatar size="sm" />
+          <Avatar src={conversationAvatar ?? undefined} name={conversationName ?? undefined} size="sm" />
           <Float placement="bottom-end" className="right-1.5 bottom-1.5">
             <div className="size-3.5 rounded-full border-2 bg-green-500" />
           </Float>
         </div>
-        <span className="font-semibold">John Doe</span>
+        <span className="font-semibold">{conversationDisplayName}</span>
       </div>
 
       <div className="flex-1" />
@@ -59,6 +65,6 @@ export function ChannelHeader() {
           <Input placeholder="Search" variant="subtle" className="rounded-lg" size="sm" />
         </InputGroup>
       </div>
-    </header>
+    </>
   );
 }

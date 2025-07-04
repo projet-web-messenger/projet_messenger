@@ -14,7 +14,7 @@ export default async function HomePage() {
   }
 
   // Redirect authenticated users to the main app
-  redirect("/channels/@me");
+  redirect("/channels/me");
 }
 
 // Add metadata for better SEO

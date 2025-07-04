@@ -68,8 +68,7 @@ type Message {
 type Mutation {
   createConversation(description: String, name: String, type: String!, userIds: [String!]!): Conversation!
   createDirectMessage(userId1: String!, userId2: String!): Conversation!
-  createOrUpdateUserFromKinde(email: String, familyName: String, givenName: String, kindeId: String!, picture: String, provider: String!, username: String): User!
-  createUser(avatar: String, displayName: String, email: String, kindeId: String!, provider: String! = "EMAIL"): User!
+  createUser(avatar: String, displayName: String, email: String, id: String!, provider: String! = "EMAIL"): User!
   deleteMessage(messageId: String!, userId: String!): Message!
   deleteUser(id: String!): Boolean!
   editMessage(content: String!, messageId: String!, userId: String!): Message!

@@ -6,6 +6,48 @@ import { PrismaService } from "../prisma/prisma.service";
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
+  // Helper method to generate unique username
+  private async generateUniqueUsername(baseName?: string): Promise<string> {
+    // Validate baseName if provided
+    if (baseName !== undefined && typeof baseName !== "string") {
+      throw new Error("Base name must be a valid string");
+    }
+
+    let baseUsername =
+      baseName
+        ?.toLowerCase()
+        .replace(/[^a-z0-9]/g, "") // Remove special characters
+        .slice(0, 20) || // Limit length
+      "user";
+
+    // If base is too short, add some default
+    if (baseUsername.length < 3) {
+      baseUsername = `user${baseUsername}`;
+    }
+
+    let username = baseUsername;
+    let counter = 1;
+
+    // Keep trying until we find a unique username
+    while (true) {
+      const existingUser = await this.prisma.user.findUnique({
+        where: { username },
+      });
+
+      if (!existingUser) {
+        return username;
+      }
+
+      username = `${baseUsername}${counter}`;
+      counter++;
+
+      // Add safety check to prevent infinite loops
+      if (counter > 10000) {
+        throw new Error("Unable to generate unique username after 10000 attempts");
+      }
+    }
+  }
+
   async findAll(): Promise<User[]> {
     return this.prisma.user.findMany();
   }
@@ -94,88 +136,6 @@ export class UserService {
     });
 
     return user;
-  }
-
-  async createOrUpdateFromKinde(
-    kindeUser: {
-      id: string;
-      email?: string;
-      given_name?: string;
-      family_name?: string;
-      picture?: string;
-      username?: string;
-    },
-    provider: AuthProvider,
-  ): Promise<User> {
-    const existingUser = await this.findById(kindeUser.id);
-
-    const displayName =
-      kindeUser.given_name && kindeUser.family_name
-        ? `${kindeUser.given_name} ${kindeUser.family_name}`
-        : kindeUser.given_name || kindeUser.username || kindeUser.email?.split("@")[0];
-
-    if (existingUser) {
-      // Update existing user
-      return this.prisma.user.update({
-        where: { id: kindeUser.id },
-        data: {
-          email: kindeUser.email || existingUser.email,
-          displayName: displayName || existingUser.displayName,
-          avatar: kindeUser.picture || existingUser.avatar,
-          provider,
-        },
-      });
-    }
-    // Create new user
-    return this.create({
-      id: kindeUser.id, // Kinde ID as primary key
-      email: kindeUser.email,
-      displayName,
-      avatar: kindeUser.picture,
-      provider,
-    });
-  }
-
-  // Helper method to generate unique username
-  private async generateUniqueUsername(baseName?: string): Promise<string> {
-    // Validate baseName if provided
-    if (baseName !== undefined && typeof baseName !== "string") {
-      throw new Error("Base name must be a valid string");
-    }
-
-    let baseUsername =
-      baseName
-        ?.toLowerCase()
-        .replace(/[^a-z0-9]/g, "") // Remove special characters
-        .slice(0, 20) || // Limit length
-      "user";
-
-    // If base is too short, add some default
-    if (baseUsername.length < 3) {
-      baseUsername = `user${baseUsername}`;
-    }
-
-    let username = baseUsername;
-    let counter = 1;
-
-    // Keep trying until we find a unique username
-    while (true) {
-      const existingUser = await this.prisma.user.findUnique({
-        where: { username },
-      });
-
-      if (!existingUser) {
-        return username;
-      }
-
-      username = `${baseUsername}${counter}`;
-      counter++;
-
-      // Add safety check to prevent infinite loops
-      if (counter > 10000) {
-        throw new Error("Unable to generate unique username after 10000 attempts");
-      }
-    }
   }
 
   async update(

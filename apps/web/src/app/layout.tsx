@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { ReactScan } from "./react-scan";
 import "@/styles/globals.css";
+import { ApolloWrapper } from "../providers/apollo";
 
 export const metadata: Metadata = {
   title: process.env.NEXT_PUBLIC_APP_NAME,
@@ -21,7 +22,7 @@ export default function RootLayout({ children }: Readonly<React.PropsWithChildre
       <body className={`${quicksand.variable} antialiased`}>
         <ReactScan />
         <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem disableTransitionOnChange>
-          {children}
+          <ApolloWrapper>{children}</ApolloWrapper>
         </ThemeProvider>
       </body>
     </html>
