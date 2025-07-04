@@ -1,13 +1,12 @@
 "use client";
 
 import Sidebar from "@/components/app/sidebar";
-import type { KindeUser } from "@kinde-oss/kinde-auth-nextjs/types";
-import type { Dict } from "@repo/utils/types";
+import { GetUserQuery } from "@/gql/graphql";
 import { useState } from "react";
 import { IoSettingsSharp } from "react-icons/io5";
 
 type AccountClientProps = {
-  userInfo: KindeUser<Dict>;
+  userInfo: GetUserQuery["user"];
 };
 
 export default function AccountClient({ userInfo }: AccountClientProps) {
@@ -65,7 +64,7 @@ export default function AccountClient({ userInfo }: AccountClientProps) {
             🎮
           </div>
           <div className="mt-8 flex-1 text-center md:text-left">
-            <h2 className="mt-2 font-semibold text-xl">{`${userInfo?.given_name || ""} ${userInfo?.family_name || ""}`.trim() || "User"}</h2>
+            <h2 className="mt-2 font-semibold text-xl">{`${userInfo?.displayName}`.trim() || "User"}</h2>
           </div>
           <div className="mt-8">
             <button type="button" className="mt-8 rounded-sm bg-blue-500 px-4 py-2 font-medium text-sm text-white transition hover:bg-blue-600">

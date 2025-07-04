@@ -32,7 +32,7 @@ export default function ChannelLayout({ children }: ChannelLayoutProps) {
             </DialogContent>
           </Dialog>
         </header>
-        <div className="relative isolate flex min-h-10 flex-1 flex-col p-2">
+        <div className="relative isolate flex min-h-10 flex-1 flex-col gap-3 p-2">
           <Button className="w-full justify-start rounded-lg" variant="ghost" asChild>
             <Link href="/channels/me">
               <Icon asChild>
@@ -59,6 +59,11 @@ export default function ChannelLayout({ children }: ChannelLayoutProps) {
           </div>
           <ChannelList />
           <div className="flex-1" />
+          <Button asChild className="hover:no-underline">
+            <Link href="/settings/account" className="flex items-center gap-2">
+              Settings
+            </Link>
+          </Button>
           <Logout />
         </div>
       </aside>

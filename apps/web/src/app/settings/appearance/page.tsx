@@ -1,12 +1,13 @@
 "use client";
 
 import Sidebar from "@/components/app/sidebar";
+import { useTheme } from "next-themes";
 import { useState } from "react";
 import { IoSettingsSharp } from "react-icons/io5";
 
 export default function AppearancePage() {
   const [showSidebar, setShowSidebar] = useState(false);
-  const [theme, setTheme] = useState("theme1");
+  const { setTheme } = useTheme();
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-gray-100 font-sans text-gray-800 md:flex-row dark:bg-[#0f172a] dark:text-white">
@@ -76,22 +77,29 @@ export default function AppearancePage() {
           <h2 className="mb-2 font-semibold text-lg">Theme</h2>
           <p className="mb-4 text-gray-600 text-sm dark:text-gray-300">Adjust the color of the interface for better visibility.</p>
           <div className="mb-6 flex gap-4">
-            {["theme1", "theme2", "theme3", "theme4"].map((t) => (
+            {["#FFFFFF", "#333333"].map((t) => (
               <div
                 key={t}
-                onClick={() => setTheme(t)}
+                onClick={() => setTheme(t === "#FFFFFF" ? "light" : "dark")}
                 onKeyUp={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
-                    setTheme(t);
+                    setTheme(t === "#FFFFFF" ? "light" : "dark");
                   }
                 }}
                 tabIndex={0}
                 role="button"
                 aria-label={`Select ${t} theme`}
-                className={`h-10 w-10 cursor-pointer rounded-full border-2 bg-gray-800 ring-indigo-300 hover:ring-2 ${theme === t ? "border-indigo-500" : "border-transparent"}`}
+                style={{ backgroundColor: t }}
+                className="h-10 w-10 cursor-pointer rounded-full border-2 ring-indigo-300 hover:ring-2"
               />
             ))}
-            <button type="button" className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-400 text-xl">
+            <button
+              onClick={() => {
+                setTheme("system");
+              }}
+              type="button"
+              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-gray-400 text-xl"
+            >
               ↻
             </button>
           </div>
