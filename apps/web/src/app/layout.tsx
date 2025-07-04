@@ -1,10 +1,9 @@
 import { ThemeProvider } from "@/providers/theme";
-import { Container } from "@repo/ui/layout/container";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { ReactScan } from "./react-scan";
 import "@/styles/globals.css";
-import { ApolloProviderWrapper } from "@/providers/apollo-provider";
+import { ApolloWrapper } from "../providers/apollo";
 
 export const metadata: Metadata = {
   title: "Messenger Appli",
@@ -23,9 +22,7 @@ export default function RootLayout({ children }: Readonly<React.PropsWithChildre
       <body className={`${quicksand.variable} antialiased`}>
         <ReactScan />
         <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <Container className="max-w-screen-md duration-moderate">
-            <ApolloProviderWrapper>{children}</ApolloProviderWrapper>
-          </Container>
+          <ApolloWrapper>{children}</ApolloWrapper>
         </ThemeProvider>
       </body>
     </html>

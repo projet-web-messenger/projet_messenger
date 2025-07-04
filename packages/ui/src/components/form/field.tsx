@@ -152,7 +152,7 @@ export const Field: UixComponent<"fieldset", FieldProps> = (props) => {
         >
           {label}
           {optionalText}
-          {required ? <span className="text-[var(--colors-error)] leading-none">*</span> : null}
+          {required ? <span className="text-[var(--color-error)] leading-none">*</span> : null}
         </label>
       ) : null}
       {children}

@@ -5,10 +5,10 @@ import * as AvatarPrimitive from "@radix-ui/react-avatar";
 import { cn } from "@repo/utils/classes";
 import { type VariantProps, cva } from "@repo/utils/classes";
 import { createContext } from "@repo/utils/create-context";
-import type { Assign, Props, PropsOf } from "@repo/utils/types";
+import type { Assign, Props } from "@repo/utils/types";
 import { Children, cloneElement, isValidElement } from "react";
 import { LuUser } from "react-icons/lu";
-import { type UixComponent, uix } from "../factory";
+import { type PropsOf, type UixComponent, uix } from "../factory";
 
 /**
  * The variants for the Avatar component.

@@ -1,50 +1,40 @@
-import { ApolloClient, InMemoryCache, createHttpLink, split } from "@apollo/client";
-import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
-import { getMainDefinition } from "@apollo/client/utilities";
-import { createClient } from "graphql-ws";
+import { ApolloLink, HttpLink } from "@apollo/client";
+import { ApolloClient, InMemoryCache, SSRMultipartLink } from "@apollo/client-integration-nextjs";
 
-//Config lien HTTP pour les queries et mutations
-const httpLink = createHttpLink({
-  uri: process.env.NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:3000/graphql",
-  credentials: "same-origin",
-});
-
-//Config du lien socket pour les subscriptions
-const wsLink =
-  typeof window !== "undefined"
-    ? new GraphQLWsLink(
-        createClient({
-          url: process.env.NEXT_PUBLIC_GRAPHQL_WS_URL || "ws://localhost:3000/graphql",
-          connectionParams: {
-            // You can add any connection parameters here if needed
-          },
-        }),
-      )
-    : null;
-
-//Séparation des liens : HTTP pour Q/M et WS pour les subscriptions
-const splitLink =
-  typeof window !== "undefined" && wsLink
-    ? split(
-        ({ query }) => {
-          const definition = getMainDefinition(query);
-          return definition.kind === "OperationDefinition" && definition.operation === "subscription";
-        },
-        wsLink,
-        httpLink,
-      )
-    : httpLink;
-
-//Config du client Apollo
-export const apolloClient = new ApolloClient({
-  link: splitLink,
-  cache: new InMemoryCache(),
-  defaultOptions: {
-    watchQuery: {
-      errorPolicy: "all",
+// have a function to create a client for you
+export function makeClient() {
+  const httpLink = new HttpLink({
+    // this needs to be an absolute url, as relative urls cannot be used in SSR
+    uri: process.env.NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:4000/graphql",
+    // you can disable result caching here if you want to
+    // (this does not work if you are rendering your page with `export const dynamic = "force-static"`)
+    fetchOptions: {
+      // you can pass additional options that should be passed to `fetch` here,
+      // e.g. Next.js-related `fetch` options regarding caching and revalidation
+      // see https://nextjs.org/docs/app/api-reference/functions/fetch#fetchurl-options
     },
-    query: {
-      errorPolicy: "all",
-    },
-  },
-});
+    // you can override the default `fetchOptions` on a per query basis
+    // via the `context` property on the options passed as a second argument
+    // to an Apollo Client data fetching hook, e.g.:
+    // const { data } = useSuspenseQuery(MY_QUERY, { context: { fetchOptions: { ... }}});
+  });
+
+  // use the `ApolloClient` from "@apollo/client-integration-nextjs"
+  return new ApolloClient({
+    // use the `InMemoryCache` from "@apollo/client-integration-nextjs"
+    cache: new InMemoryCache(),
+    link:
+      typeof window === "undefined"
+        ? ApolloLink.from([
+            new SSRMultipartLink({
+              stripDefer: true,
+            }),
+            httpLink,
+          ])
+        : httpLink,
+  });
+}
+
+export function getClient() {
+  return makeClient();
+}

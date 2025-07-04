@@ -14,7 +14,6 @@ export function ReactScan() {
           });
         })
         .catch((err) => {
-          // biome-ignore lint/suspicious/noConsole: <explanation>
           console.error("Failed to load react-scan:", err);
         });
     }

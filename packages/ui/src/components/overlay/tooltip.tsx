@@ -623,10 +623,6 @@ export const TooltipContent: UixComponent<"div", TooltipContentProps> = (props) 
     </TooltipPrimitive.Content>
   );
 
-  useEffect(() => {
-    return () => {};
-  });
-
   if (portalled) {
     content = (
       <TooltipPrimitive.Portal container={container} forceMount={forceMount}>

@@ -1,7 +1,11 @@
 import { composeRefs } from "@repo/utils/compose-refs";
 import { mergeProps } from "@repo/utils/merge-props";
-import type { Assign, Dict, HTMLProps, PropsOf } from "@repo/utils/types";
+import type { Assign, Dict } from "@repo/utils/types";
 import { Children, cloneElement, createElement, isValidElement, memo } from "react";
+
+export type HTMLProps<T extends keyof React.JSX.IntrinsicElements> = PropsOf<T>;
+
+export type PropsOf<T extends React.ElementType> = React.ComponentPropsWithRef<T>;
 
 /**
  * Props for polymorphic components, allowing the use of a different element type or child element.

@@ -24,6 +24,9 @@ export async function handleOAuthLogin(connection_id: string) {
     if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) {
       throw error;
     }
+
+    // Log unexpected errors but don't expose them to client
+    console.error("OAuth authentication error:", error);
     throw new Error("Authentication failed. Please try again.");
   }
 }

@@ -1,66 +1,81 @@
+import { getUserId } from "@/actions/user";
+import { ConversationType, type UserConversationsQuery, type UserConversationsQueryVariables, UserStatus } from "@/gql/graphql";
+import { getClient } from "@/lib/apollo-client";
+import { GET_USER_CONVERSATIONS } from "@/lib/graphql/queries";
 import { Card, CardBody, CardDescription, CardFooter, CardHeader, CardTitle } from "@repo/ui/data-display/card";
-import { Button, CloseButton, IconButton } from "@repo/ui/form/button";
+import { Button, CloseButton } from "@repo/ui/form/button";
 import { Float } from "@repo/ui/layout/float";
-import { Icon } from "@repo/ui/media/icon";
 import { LinkBox, LinkOverlay } from "@repo/ui/navigation/link";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@repo/ui/overlay/tooltip";
-import { LuPlus } from "react-icons/lu";
+import { cn } from "@repo/utils/classes";
 import { Avatar } from "../ui/avatar";
+import { Link } from "../ui/link";
 
-export function ChannelList() {
+export default async function ChannelList() {
+  const userId = await getUserId();
+
+  const {
+    data: { userConversations },
+  } = await getClient().query<UserConversationsQuery, UserConversationsQueryVariables>({
+    query: GET_USER_CONVERSATIONS,
+    variables: { userId },
+  });
+
   return (
-    <aside className="relative flex w-52 flex-col border">
-      <header className="flex h-12 items-center border-b p-2">
-        <Button className="line-clamp-1 w-full text-ellipsis rounded-lg" variant="ghost" size="sm">
-          Find or start a conversation
-        </Button>
-      </header>
-      <div className="relative isolate flex min-h-10 flex-col p-2">
-        <Button className="w-full justify-start rounded-lg" variant="ghost">
-          <Icon asChild>
-            <svg className="size-6">
-              <use href="/static/assets/icons/user-friend.svg" />
-            </svg>
-          </Icon>
-          <span>Friends</span>
-        </Button>
-        <hr className="my-3 border-t" />
-        <div className="flex items-center justify-between px-2 py-1">
-          <p className="text-sm">Private messages</p>
-          <Tooltip positioning={{ side: "top", align: "center" }}>
-            <TooltipTrigger asChild>
-              <IconButton icon={<LuPlus />} variant="unstyled" size="sm" className="p-0.5" />
-            </TooltipTrigger>
-            <TooltipContent className="w-auto min-w-0">
-              <Card className="g-white border">
-                <p className="px-2 py-1 text-center text-sm">Create a MP</p>
+    <ul className="relative isolate flex min-h-10 flex-col p-2">
+      {userConversations.map(({ conversation }) => {
+        const isGroupChat = conversation.type === ConversationType.GroupChat;
+
+        const conversationAvatar = !isGroupChat
+          ? conversation.users.find((useConversation) => useConversation.user.id !== userId)?.user.avatar
+          : conversation?.avatar;
+
+        const conversationDisplayName = !isGroupChat
+          ? conversation.users.find((useConversation) => useConversation.user.id !== userId)?.user.displayName
+          : conversation?.users
+              .map((useConversation) => (useConversation.user.id === userId ? useConversation.user.displayName : ""))
+              .filter(Boolean)
+              .join(", ") || conversation?.name;
+
+        return (
+          <li key={conversation.id} className="w-full">
+            <Button variant="ghost" asChild>
+              <Card className="h-auto flex-none flex-row items-center justify-start rounded-lg border-0" asChild>
+                <LinkBox>
+                  <CardHeader className="relative justify-center p-2">
+                    <Avatar src={conversationAvatar ?? undefined} name={conversation.name ?? undefined} size="md" />
+                    {!isGroupChat ? (
+                      <Float placement="bottom-end" className="right-3 bottom-3">
+                        <div
+                          className={cn(
+                            "size-3.5 rounded-full border-2",
+                            conversation.users.find((useConversation) => useConversation.user.id !== userId)?.user.status === UserStatus.Online
+                              ? " bg-green-500"
+                              : " bg-gray-300",
+                          )}
+                        />
+                      </Float>
+                    ) : null}
+                  </CardHeader>
+                  <CardBody className="h-full justify-center p-2">
+                    {/* Message Info */}
+                    <CardTitle className="font-semibold text-md">
+                      <LinkOverlay className="hover:no-underline" asChild>
+                        <Link href={`/channels/me/${conversation.id}`}>{conversationDisplayName}</Link>
+                      </LinkOverlay>
+                    </CardTitle>
+                    <CardDescription className="line-clamp-1 text-ellipsis text-gray-500 text-xs">
+                      {isGroupChat ? conversation.description : conversation.users.find((useConversation) => useConversation.user.id !== userId)?.user.bio}
+                    </CardDescription>
+                  </CardBody>
+                  <CardFooter className="h-full items-center justify-between p-2">
+                    <CloseButton variant="unstyled" size="sm" className="p-0.5 opacity-50 transition-all hover:scale-105 hover:opacity-100" />
+                  </CardFooter>
+                </LinkBox>
               </Card>
-            </TooltipContent>
-          </Tooltip>
-        </div>
-        <Button variant="ghost" asChild>
-          <Card className="h-auto flex-none flex-row items-start justify-start rounded-lg border-0" asChild>
-            <LinkBox>
-              <CardHeader className="relative justify-center p-2">
-                <Avatar size="md" />
-                <Float placement="bottom-end" className="right-3.5 bottom-3.5">
-                  <div className="size-3.5 rounded-full border-2 bg-green-500" />
-                </Float>
-              </CardHeader>
-              <CardBody className="h-full justify-center p-2">
-                {/* Message Info */}
-                <CardTitle className="font-medium text-sm">
-                  <LinkOverlay href="/chat/john-doe">John Doe</LinkOverlay>
-                </CardTitle>
-                <CardDescription className="line-clamp-1 text-ellipsis text-gray-500 text-xs">Last message preview...</CardDescription>
-              </CardBody>
-              <CardFooter className="h-full items-center justify-between p-2">
-                <CloseButton variant="unstyled" size="sm" className="p-0.5 opacity-50 transition-all hover:scale-105 hover:opacity-100" />
-              </CardFooter>
-            </LinkBox>
-          </Card>
-        </Button>
-      </div>
-    </aside>
+            </Button>
+          </li>
+        );
+      })}
+    </ul>
   );
 }

@@ -5,7 +5,8 @@
   "private": true,
   "license": "MIT",
   "exports": {
-    "./*": "./src/components/*.tsx"
+    "./*": "./src/components/*.tsx",
+    "./hooks/*": "./src/hooks/*.ts"
   },
   "scripts": {
     "lint": "biome check --write --unsafe --no-errors-on-unmatched ./src"

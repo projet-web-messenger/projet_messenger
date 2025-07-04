@@ -15,12 +15,21 @@
       "cssModules": false
     }
   },
+  "javascript": {
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
+    }
+  },
   "formatter": {
     "indentStyle": "space",
     "lineWidth": 160
   },
+  "files": {
+    "include": ["src/**/*.ts", "src/**/*.tsx"],
+    "ignore": ["src/**/*.d.ts", "src/gql/**/*.ts"]
+  },
   "linter": {
-    "ignore": ["/apps/web/src/styles/**/*.css"],
+    "ignore": ["/apps/web/src/styles/**/*.css", "/apps/web/src/gql/**/*.ts"],
     "enabled": true,
     "rules": {
       "recommended": true,
@@ -37,13 +46,20 @@
         "useSingleCaseStatement": "warn",
         "useThrowNewError": "warn",
         "useThrowOnlyError": "warn",
-        "useWhile": "warn"
+        "useWhile": "warn",
+        "useImportType": {
+          "fix": "none",
+          "level": "off"
+        }
       },
       "nursery": {
         "useSortedClasses": "warn"
       },
       "suspicious": {
-        "noConsole": "error",
+        "noConsole": {
+          "level": "error",
+          "options": { "allow": ["error"] }
+        },
         "noEvolvingTypes": "error",
         "useErrorMessage": "error",
         "useNumberToFixedDigitsArgument": "warn",

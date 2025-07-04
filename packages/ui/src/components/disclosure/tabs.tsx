@@ -6,10 +6,9 @@ import { cn } from "@repo/utils/classes";
 import { composeRefs } from "@repo/utils/compose-refs";
 import { createContext } from "@repo/utils/create-context";
 import { requestAnimationExit, uuid } from "@repo/utils/functions";
-import type { PropsOf } from "@repo/utils/types";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useCallbackRef } from "../../hooks/use-callback-ref";
-import { type UixComponent, uix } from "../factory";
+import { type PropsOf, type UixComponent, uix } from "../factory";
 
 type ElementIds = Partial<{
   root: string;
