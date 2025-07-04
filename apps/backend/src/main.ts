@@ -6,8 +6,15 @@ async function bootstrap() {
 
   //Activons CORS pour permettre les requêtes depuis le frontend
   app.enableCors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000", // Remplacez par l'URL de votre frontend
+    origin: [
+      "http://localhost:3001", // ← Frontend Next.js
+      "http://localhost:3000", // ← GraphQL Playground
+      "http://127.0.0.1:3001",
+      "http://127.0.0.1:3000",
+    ],
     credentials: true, // Permettre les cookies et les en-têtes d'autorisation
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin"],
   });
 
   const PORT = process.env.PORT || 3000;

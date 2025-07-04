@@ -181,7 +181,10 @@ export const Tooltip = (props: TooltipProps) => {
 
   const [id, setId] = useState<string | undefined>(idProp);
 
-  const { isOpen, onClose, onOpen } = useDisclosure({ defaultOpen, isOpen: open });
+  const { isOpen, onClose, onOpen } = useDisclosure({
+    defaultOpen,
+    isOpen: open,
+  });
 
   const modalRef = useRef(isOpen ? modal : false);
 
@@ -522,7 +525,10 @@ export const TooltipContent: UixComponent<"div", TooltipContentProps> = (props) 
   }));
 
   const positioning = useMemo(() => {
-    const positioning: PositioningOptions = { ...positioningContext, ...positioningProp };
+    const positioning: PositioningOptions = {
+      ...positioningContext,
+      ...positioningProp,
+    };
     if (!positioning.offset) {
       positioning.offset = 8;
     }
@@ -601,7 +607,7 @@ export const TooltipContent: UixComponent<"div", TooltipContentProps> = (props) 
       sideOffset={positioning.offset}
       collisionPadding={collisionPadding}
       className={cn(
-        "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 relative max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-32 max-w-80 origin-[var(--radix-tooltip-content-transform-origin)] rounded-sm bg-[var(--color-bg)] text-[var(--bg-contrast)] duration-300 data-[state=closed]:animate-out data-[state=open]:animate-in",
+        "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 relative max-h-[var(--radix-dropdown-menu-content-available-height)] w-[var(--radix-tooltip-trigger-width)] min-w-32 max-w-80 origin-[var(--radix-tooltip-content-transform-origin)] rounded-sm bg-[var(--color-bg)] text-[var(--bg-contrast)] duration-300 data-[state=closed]:animate-out data-[state=open]:animate-in",
 
         "data-[state=open]:data-[side=top]:slide-in-from-bottom-[0.5rem] data-[state=closed]:data-[side=top]:slide-out-to-bottom-[0.5rem] data-[state=open]:data-[side=bottom]:slide-in-from-top-[0.5rem] data-[state=closed]:data-[side=bottom]:slide-out-to-top-[0.5rem] data-[state=open]:data-[side=left]:slide-in-from-right-[0.5rem] data-[state=closed]:data-[side=left]:slide-out-to-right-[0.5rem] data-[state=open]:data-[side=right]:slide-in-from-left-[0.5rem] data-[state=closed]:data-[side=right]:slide-out-to-left-[0.5rem]",
         className,

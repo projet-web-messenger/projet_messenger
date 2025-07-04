@@ -158,7 +158,7 @@ export const Field: UixComponent<"fieldset", FieldProps> = (props) => {
       {children}
       {invalid && errorText ? (
         <span
-          className="inline-flex items-center gap-1 font-medium text-[var(--colors-error)] text-xs leading-4"
+          className="inline-flex items-center gap-1 font-medium text-[var(--color-error)] text-xs leading-4"
           aria-live="polite"
           data-part="error-text"
           data-scope="input"
