@@ -114,34 +114,4 @@ export class ConversationResolver {
       isPinned,
     });
   }
-
-  @Query(() => Conversation, { nullable: true })
-  async conversationById(@Args("conversationId", { type: () => Int }) conversationId: number): Promise<Conversation | null> {
-    const conversation = await this.prisma.conversation.findUnique({
-      where: { id: conversationId },
-      include: {
-        participants: {
-          include: {
-            user: true,
-          },
-        },
-        messages: {
-          include: { sender: true },
-          orderBy: { createdAt: "desc" },
-          take: 1,
-        },
-      },
-    });
-
-    if (!conversation) {
-      return null;
-    }
-
-    return {
-      ...conversation,
-      title: conversation.title ?? undefined,
-      participants: conversation.participants.map((p) => p.user),
-      messages: conversation.messages,
-    };
-  }
 }

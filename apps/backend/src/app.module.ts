@@ -11,7 +11,6 @@ import { WebSocketModule } from "./websocket/websocket.module";
 
 @Module({
   imports: [
-    RabbitmqModule,
     PrismaModule,
     RabbitMQModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({

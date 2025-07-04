@@ -1,43 +1,57 @@
-import { PrismaClient } from "@prisma/client"; // Adjust the path as necessary
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
+
+function generateRandomId(length: number = 8): string {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
 
 async function main() {
   console.log("🔄 Démarrage du seeding...");
 
-  // Créer des utilisateurs
+  // Créer des utilisateurs - Use displayName consistently
   const farid = await prisma.user.create({
     data: {
       email: "farid@mail.com",
-      name: "Farid",
+      displayName: "Farid",
+      id: generateRandomId(10),
     },
   });
 
   const mody = await prisma.user.create({
     data: {
       email: "mody@mail.com",
-      name: "Mody",
+      displayName: "Mody",
+      id: generateRandomId(10),
     },
   });
 
   const georgy = await prisma.user.create({
     data: {
       email: "georgy@mail.com",
-      name: "Georgy",
-    },
-  });
-  const verdiane = await prisma.user.create({
-    data: {
-      email: "verdiane@mail.com",
-      name: "Verdiane",
+      displayName: "Georgy",
+      id: generateRandomId(10),
     },
   });
 
-  // Créer une conversation entre moi et Mody
+  const verdiane = await prisma.user.create({
+    data: {
+      email: "verdiane@mail.com",
+      displayName: "Verdiane",
+      id: generateRandomId(10),
+    },
+  });
+
+  // Créer une conversation entre farid et mody
   const conversation1 = await prisma.conversation.create({
     data: {
-      title: "Farid & Mody",
-      participants: {
+      name: "Farid & Mody",
+      users: {
         create: [{ userId: farid.id }, { userId: mody.id }],
       },
     },
@@ -46,8 +60,8 @@ async function main() {
   // Créer une conversation de groupe
   const conversation2 = await prisma.conversation.create({
     data: {
-      title: "Groupe de discussion",
-      participants: {
+      name: "Groupe de discussion",
+      users: {
         create: [
           { userId: farid.id },
           { userId: mody.id },
@@ -62,7 +76,7 @@ async function main() {
   await prisma.message.createMany({
     data: [
       {
-        content: "Paix sur toi Mody  !!!",
+        content: "Paix sur toi Mody !!!",
         senderId: farid.id,
         conversationId: conversation1.id,
       },
@@ -91,10 +105,10 @@ async function main() {
 
   console.log("✅ Données de test créées avec succès !");
   console.log(
-    `👥 Utilisateurs créés: ${farid.name}, ${mody.name}, ${georgy.name}, ${verdiane.name} `
+    `👥 Utilisateurs créés: ${farid.displayName}, ${mody.displayName}, ${georgy.displayName}, ${verdiane.displayName}`
   );
   console.log(
-    `💬 Conversations créées: ${conversation1.title}, ${conversation2.title}`
+    `💬 Conversations créées: ${conversation1.name}, ${conversation2.name}`
   );
   console.log(`📝 Messages créés: 5 messages`);
 }
