@@ -1,5 +1,6 @@
 import ChannelList from "@/components/app/channel-list";
 import ChannelSelectFriends from "@/components/app/channel-select-friends";
+import RabbitmqDemo from "@/components/app/rabbitmq-demo";
 import { Link } from "@/components/ui/link";
 import { Card } from "@repo/ui/data-display/card";
 import { Button, IconButton } from "@repo/ui/form/button";
@@ -63,6 +64,16 @@ export default function ChannelLayout({ children }: ChannelLayoutProps) {
         </div>
       </aside>
       <main className="flex-1">{children}</main>
+      <div>
+        {/* ✅ Panneau latéral COMPACT - 300px fixe */}
+        <div className="flex w-[300px] flex-shrink-0 flex-col border-gray-200 border-l bg-white dark:border-gray-700 dark:bg-gray-900">
+          {/* ✅ RabbitMQ Monitor */}
+          <div className="border-gray-200 border-b p-3 dark:border-gray-700">
+            <h2 className="mb-2 font-semibold text-gray-900 text-sm dark:text-white">🐰 RabbitMQ Monitor</h2>
+            <RabbitmqDemo />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
